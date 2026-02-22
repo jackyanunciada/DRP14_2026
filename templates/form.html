@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="card">
+  <h1>
+    {% if modo == "criar" %}Novo chamado{% else %}Editar chamado #{{ chamado["id"] }}{% endif %}
+  </h1>
+
+  <form class="form" method="post"
+        action="{% if modo=='criar' %}{{ url_for('criar') }}{% else %}{{ url_for('atualizar', chamado_id=chamado['id']) }}{% endif %}">
+    <label>Título</label>
+    <input name="titulo" value="{{ chamado['titulo'] }}" placeholder="Ex.: Falha no acesso ao sistema" />
+
+    <label>Descrição</label>
+    <textarea name="descricao" rows="5" placeholder="Descreva o problema...">{{ chamado['descricao'] }}</textarea>
+
+    <div class="grid">
+      <div>
+        <label>Status</label>
+        <select name="status">
+          {% for opt in ["Aberto","Em andamento","Concluído"] %}
+            <option value="{{ opt }}" {% if chamado["status"]==opt %}selected{% endif %}>{{ opt }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <label>Prioridade</label>
+        <select name="prioridade">
+          {% for opt in ["Baixa","Média","Alta"] %}
+            <option value="{{ opt }}" {% if chamado["prioridade"]==opt %}selected{% endif %}>{{ opt }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="row end">
+      <a class="btn ghost" href="{{ url_for('index') }}">Cancelar</a>
+      <button class="btn" type="submit">
+        {% if modo == "criar" %}Criar{% else %}Salvar{% endif %}
+      </button>
+    </div>
+  </form>
+</section>
+
+{% endblock %}

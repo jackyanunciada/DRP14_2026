@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Projeto Integrador DRP14_2026</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+
+<body>
+
+  <header class="top">
+    <div class="container">
+      <div class="brand">
+        <div class="logo">DRP14</div>
+
+        <div>
+          <div class="title">Projeto Integrador DRP14_2026</div>
+
+          <div class="subtitle">
+            Curso: Ciência de Dados <br>
+            Orientadora: Mariane Pires De Sá <br>
+            Sistema Web desenvolvido com Flask + SQLite + CRUD + Git
+          </div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a href="{{ url_for('index') }}">Chamados</a>
+        <a class="btn" href="{{ url_for('novo') }}">+ Novo chamado</a>
+      </nav>
+    </div>
+  </header>
+
+
+  <main class="container">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-wrap">
+          {% for category, msg in messages %}
+            <div class="flash {{ category }}">{{ msg }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+
+  </main>
+
+
+  <footer class="footer">
+    <div class="container">
+      <span>
+        © 2026 • Projeto Integrador DRP14_2026 <br>
+        Turma: Ciência de Dados <br>
+        Orientadora: Mariane Pires De Sá <br>
+        Participantes: 
+        Ana Caldas • Nayara Andrade • Jaqueline Anunciada • 
+        Ariana • Caio • Gledson • Jana • Nathan
+      </span>
+    </div>
+  </footer>
+
+</body>
+</html>

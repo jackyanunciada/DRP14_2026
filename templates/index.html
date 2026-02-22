@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="card">
+  <div class="row">
+    <h1>Chamados</h1>
+
+    <form class="filter" method="get" action="{{ url_for('index') }}">
+      <label>Status:</label>
+      <select name="status">
+        <option value="" {% if not status %}selected{% endif %}>Todos</option>
+        <option value="Aberto" {% if status=='Aberto' %}selected{% endif %}>Aberto</option>
+        <option value="Em andamento" {% if status=='Em andamento' %}selected{% endif %}>Em andamento</option>
+        <option value="Concluído" {% if status=='Concluído' %}selected{% endif %}>Concluído</option>
+      </select>
+      <button class="btn" type="submit">Filtrar</button>
+      {% if status %}
+        <a class="btn ghost" href="{{ url_for('index') }}">Limpar</a>
+      {% endif %}
+    </form>
+  </div>
+
+  {% if chamados|length == 0 %}
+    <p class="muted">Nenhum chamado encontrado. Clique em <b>Novo chamado</b>.</p>
+  {% else %}
+    <div class="table">
+      <div class="thead">
+        <div>ID</div>
+        <div>Título</div>
+        <div>Status</div>
+        <div>Prioridade</div>
+        <div>Criado em</div>
+        <div>Ações</div>
+      </div>
+
+      {% for c in chamados %}
+      <div class="trow">
+        <div>#{{ c["id"] }}</div>
+        <div class="nowrap">{{ c["titulo"] }}</div>
+        <div><span class="pill">{{ c["status"] }}</span></div>
+        <div>{{ c["prioridade"] }}</div>
+        <div class="muted">{{ c["criado_em"] }}</div>
+        <div class="actions">
+          <a class="btn small" href="{{ url_for('ver', chamado_id=c['id']) }}">Ver</a>
+          <a class="btn small ghost" href="{{ url_for('editar', chamado_id=c['id']) }}">Editar</a>
+          <form method="post" action="{{ url_for('excluir', chamado_id=c['id']) }}"
+                onsubmit="return confirm('Excluir este chamado?');">
+            <button class="btn small danger" type="submit">Excluir</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</section>
+
+{% endblock %}
