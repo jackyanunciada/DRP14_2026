@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Projeto Integrador DRP14_2026</title>
+  <title>Sistema de Gestão de Pedidos - DRP14_2026</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
 
@@ -15,23 +15,20 @@
         <div class="logo">DRP14</div>
 
         <div>
-          <div class="title">Projeto Integrador DRP14_2026</div>
+          <div class="title">Sistema de Gestão de Pedidos</div>
 
           <div class="subtitle">
-            Curso: Ciência de Dados <br>
-            Orientadora: Mariane Pires De Sá <br>
             Sistema Web desenvolvido com Flask + SQLite + CRUD + Git
           </div>
         </div>
       </div>
 
       <nav class="nav">
-        <a href="{{ url_for('index') }}">Chamados</a>
-        <a class="btn" href="{{ url_for('novo') }}">+ Novo chamado</a>
+        <a href="{{ url_for('index') }}">Pedidos</a>
+        <a class="btn" href="{{ url_for('novo') }}">+ Novo pedido</a>
       </nav>
     </div>
   </header>
-
 
   <main class="container">
 
@@ -49,15 +46,15 @@
 
   </main>
 
-
   <footer class="footer">
     <div class="container">
       <span>
         © 2026 • Projeto Integrador DRP14_2026 <br>
+        Tema: Sistema para Gestão de uma Distribuidora de Pães <br>
         Turma: Ciência de Dados <br>
         Orientadora: Mariane Pires De Sá <br>
-        Participantes: 
-        Ana Caldas • Nayara Andrade • Jaqueline Anunciada • 
+        Participantes:
+        Ana Caldas • Nayara Andrade • Jaqueline Anunciada •
         Ariana • Caio • Gledson • Jana • Nathan
       </span>
     </div>

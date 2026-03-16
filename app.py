@@ -10,7 +10,7 @@ DB_PATH = APP_DIR / "drp14_2026.db"
 SCHEMA_PATH = APP_DIR / "schema.sql"
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "drp14_2026_secret_key"  # mensagens flash
+app.config["SECRET_KEY"] = "drp14_2026_secret_key"
 
 
 # -----------------------------
@@ -54,13 +54,16 @@ def index():
     db = get_db()
 
     status = request.args.get("status", "").strip()
+
     if status:
         rows = db.execute(
             "SELECT * FROM chamados WHERE status = ? ORDER BY id DESC",
             (status,),
         ).fetchall()
     else:
-        rows = db.execute("SELECT * FROM chamados ORDER BY id DESC").fetchall()
+        rows = db.execute(
+            "SELECT * FROM chamados ORDER BY id DESC"
+        ).fetchall()
 
     return render_template("index.html", chamados=rows, status=status)
 
@@ -70,20 +73,26 @@ def novo():
     return render_template(
         "form.html",
         modo="criar",
-        chamado={"titulo": "", "descricao": "", "status": "Aberto", "prioridade": "Média"},
+        chamado={
+            "titulo": "",
+            "descricao": "",
+            "status": "Pendente",
+            "prioridade": "Média",
+        },
     )
 
 
 @app.post("/criar")
 def criar():
     ensure_db()
+
     titulo = request.form.get("titulo", "").strip()
     descricao = request.form.get("descricao", "").strip()
-    status = request.form.get("status", "Aberto").strip()
+    status = request.form.get("status", "Pendente").strip()
     prioridade = request.form.get("prioridade", "Média").strip()
 
     if not titulo or not descricao:
-        flash("Título e descrição são obrigatórios.", "error")
+        flash("Cliente e detalhes do pedido são obrigatórios.", "error")
         return redirect(url_for("novo"))
 
     db = get_db()
@@ -93,7 +102,7 @@ def criar():
     )
     db.commit()
 
-    flash("Chamado criado com sucesso!", "ok")
+    flash("Pedido criado com sucesso!", "ok")
     return redirect(url_for("index"))
 
 
@@ -101,10 +110,13 @@ def criar():
 def ver(chamado_id: int):
     ensure_db()
     db = get_db()
-    row = db.execute("SELECT * FROM chamados WHERE id = ?", (chamado_id,)).fetchone()
+    row = db.execute(
+        "SELECT * FROM chamados WHERE id = ?",
+        (chamado_id,)
+    ).fetchone()
 
     if row is None:
-        flash("Chamado não encontrado.", "error")
+        flash("Pedido não encontrado.", "error")
         return redirect(url_for("index"))
 
     return render_template("view.html", chamado=row)
@@ -114,10 +126,13 @@ def ver(chamado_id: int):
 def editar(chamado_id: int):
     ensure_db()
     db = get_db()
-    row = db.execute("SELECT * FROM chamados WHERE id = ?", (chamado_id,)).fetchone()
+    row = db.execute(
+        "SELECT * FROM chamados WHERE id = ?",
+        (chamado_id,)
+    ).fetchone()
 
     if row is None:
-        flash("Chamado não encontrado.", "error")
+        flash("Pedido não encontrado.", "error")
         return redirect(url_for("index"))
 
     return render_template("form.html", modo="editar", chamado=row)
@@ -126,13 +141,14 @@ def editar(chamado_id: int):
 @app.post("/atualizar/<int:chamado_id>")
 def atualizar(chamado_id: int):
     ensure_db()
+
     titulo = request.form.get("titulo", "").strip()
     descricao = request.form.get("descricao", "").strip()
-    status = request.form.get("status", "Aberto").strip()
+    status = request.form.get("status", "Pendente").strip()
     prioridade = request.form.get("prioridade", "Média").strip()
 
     if not titulo or not descricao:
-        flash("Título e descrição são obrigatórios.", "error")
+        flash("Cliente e detalhes do pedido são obrigatórios.", "error")
         return redirect(url_for("editar", chamado_id=chamado_id))
 
     db = get_db()
@@ -142,7 +158,7 @@ def atualizar(chamado_id: int):
     )
     db.commit()
 
-    flash("Chamado atualizado com sucesso!", "ok")
+    flash("Pedido atualizado com sucesso!", "ok")
     return redirect(url_for("ver", chamado_id=chamado_id))
 
 
@@ -153,13 +169,16 @@ def excluir(chamado_id: int):
     db.execute("DELETE FROM chamados WHERE id = ?", (chamado_id,))
     db.commit()
 
-    flash("Chamado excluído.", "ok")
+    flash("Pedido excluído.", "ok")
     return redirect(url_for("index"))
 
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "project": "Projeto Integrador DRP14_2026"}
+    return {
+        "status": "ok",
+        "project": "Sistema de Gestão de Pedidos - DRP14_2026"
+    }
 
 
 if __name__ == "__main__":

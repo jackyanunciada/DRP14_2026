@@ -2,32 +2,60 @@
 {% block content %}
 
 <section class="card">
+
   <div class="row">
-    <h1>Chamado #{{ chamado["id"] }}</h1>
+    <h1>Pedido #{{ chamado["id"] }}</h1>
+
     <div class="actions">
       <a class="btn ghost" href="{{ url_for('editar', chamado_id=chamado['id']) }}">Editar</a>
-      <form method="post" action="{{ url_for('excluir', chamado_id=chamado['id']) }}"
-            onsubmit="return confirm('Excluir este chamado?');">
+
+      <form method="post"
+            action="{{ url_for('excluir', chamado_id=chamado['id']) }}"
+            onsubmit="return confirm('Excluir este pedido?');">
         <button class="btn danger" type="submit">Excluir</button>
       </form>
     </div>
   </div>
 
+
   <div class="info">
-    <div><span class="muted">Título</span><br><b>{{ chamado["titulo"] }}</b></div>
-    <div><span class="muted">Status</span><br><span class="pill">{{ chamado["status"] }}</span></div>
-    <div><span class="muted">Prioridade</span><br><b>{{ chamado["prioridade"] }}</b></div>
-    <div><span class="muted">Criado em</span><br><span class="muted">{{ chamado["criado_em"] }}</span></div>
+
+    <div>
+      <span class="muted">Cliente</span><br>
+      <b>{{ chamado["titulo"] }}</b>
+    </div>
+
+    <div>
+      <span class="muted">Status</span><br>
+      <span class="pill">{{ chamado["status"] }}</span>
+    </div>
+
+    <div>
+      <span class="muted">Prioridade de entrega</span><br>
+      <b>{{ chamado["prioridade"] }}</b>
+    </div>
+
+    <div>
+      <span class="muted">Criado em</span><br>
+      <span class="muted">{{ chamado["criado_em"] }}</span>
+    </div>
+
   </div>
+
 
   <hr class="sep" />
 
-  <h3>Descrição</h3>
-  <p class="pre">{{ chamado["descricao"] }}</p>
+  <h3>Detalhes do pedido</h3>
+
+  <p class="pre">
+    {{ chamado["descricao"] }}
+  </p>
+
 
   <div class="row end">
     <a class="btn ghost" href="{{ url_for('index') }}">Voltar</a>
   </div>
+
 </section>
 
 {% endblock %}
