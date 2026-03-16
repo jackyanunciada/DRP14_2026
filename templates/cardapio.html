@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="card">
+
+  <div class="row">
+    <h1>Pedido #{{ pedido["id"] }}</h1>
+
+    <div class="actions">
+      <a class="btn ghost" href="{{ url_for('editar', pedido_id=pedido['id']) }}">Editar</a>
+      <form method="post"
+            action="{{ url_for('excluir', pedido_id=pedido['id']) }}"
+            onsubmit="return confirm('Excluir este pedido?');">
+        <button class="btn danger" type="submit">Excluir</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="info">
+    <div>
+      <span class="muted">Cliente</span><br>
+      <b>{{ pedido["cliente"] }}</b>
+    </div>
+
+    <div>
+      <span class="muted">Status</span><br>
+      <span class="pill">{{ pedido["status"] }}</span>
+    </div>
+
+    <div>
+      <span class="muted">Quantidade / variedade</span><br>
+      <b>{{ pedido["quantidade_variedade"] }}</b>
+    </div>
+
+    <div>
+      <span class="muted">Tipo de entrega</span><br>
+      <b>{{ pedido["tipo_entrega"] }}</b>
+    </div>
+
+    <div>
+      <span class="muted">Taxa de entrega</span><br>
+      <b>R$ {{ pedido["taxa_entrega"] }}</b>
+    </div>
+
+    <div>
+      <span class="muted">Valor total</span><br>
+      <b>R$ {{ pedido["valor_total"] }}</b>
+    </div>
+
+    <div>
+      <span class="muted">Prioridade de entrega</span><br>
+      <b>{{ pedido["prioridade"] }}</b>
+    </div>
+
+    <div>
+      <span class="muted">Criado em</span><br>
+      <span class="muted">{{ pedido["criado_em"] }}</span>
+    </div>
+  </div>
+
+  <hr class="sep" />
+
+  <h3>Detalhes do pedido</h3>
+  <p class="pre">{{ pedido["descricao"] }}</p>
+
+  <div class="row end">
+    <a class="btn ghost" href="{{ url_for('index') }}">Voltar</a>
+  </div>
+
+</section>
+
+{% endblock %}

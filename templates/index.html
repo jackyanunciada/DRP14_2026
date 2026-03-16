@@ -11,7 +11,8 @@
         <option value="" {% if not status %}selected{% endif %}>Todos</option>
         <option value="Pendente" {% if status=='Pendente' %}selected{% endif %}>Pendente</option>
         <option value="Confirmado" {% if status=='Confirmado' %}selected{% endif %}>Confirmado</option>
-        <option value="Em produção" {% if status=='Em produção' %}selected{% endif %}>Em produção</option>
+        <option value="Em separação" {% if status=='Em separação' %}selected{% endif %}>Em separação</option>
+        <option value="Aguardando entrega" {% if status=='Aguardando entrega' %}selected{% endif %}>Aguardando entrega</option>
         <option value="Saiu para entrega" {% if status=='Saiu para entrega' %}selected{% endif %}>Saiu para entrega</option>
         <option value="Entregue" {% if status=='Entregue' %}selected{% endif %}>Entregue</option>
         <option value="Cancelado" {% if status=='Cancelado' %}selected{% endif %}>Cancelado</option>
@@ -23,7 +24,7 @@
     </form>
   </div>
 
-  {% if chamados|length == 0 %}
+  {% if pedidos|length == 0 %}
     <p class="muted">Nenhum pedido encontrado. Clique em <b>Novo pedido</b>.</p>
   {% else %}
     <div class="table">
@@ -31,22 +32,24 @@
         <div>ID</div>
         <div>Cliente</div>
         <div>Status</div>
-        <div>Prioridade de entrega</div>
+        <div>Entrega</div>
+        <div>Valor total</div>
         <div>Criado em</div>
         <div>Ações</div>
       </div>
 
-      {% for c in chamados %}
+      {% for p in pedidos %}
       <div class="trow">
-        <div>#{{ c["id"] }}</div>
-        <div class="nowrap">{{ c["titulo"] }}</div>
-        <div><span class="pill">{{ c["status"] }}</span></div>
-        <div>{{ c["prioridade"] }}</div>
-        <div class="muted">{{ c["criado_em"] }}</div>
+        <div>#{{ p["id"] }}</div>
+        <div class="nowrap">{{ p["cliente"] }}</div>
+        <div><span class="pill">{{ p["status"] }}</span></div>
+        <div>{{ p["tipo_entrega"] }}</div>
+        <div>R$ {{ p["valor_total"] }}</div>
+        <div class="muted">{{ p["criado_em"] }}</div>
         <div class="actions">
-          <a class="btn small" href="{{ url_for('ver', chamado_id=c['id']) }}">Ver</a>
-          <a class="btn small ghost" href="{{ url_for('editar', chamado_id=c['id']) }}">Editar</a>
-          <form method="post" action="{{ url_for('excluir', chamado_id=c['id']) }}"
+          <a class="btn small" href="{{ url_for('ver', pedido_id=p['id']) }}">Ver</a>
+          <a class="btn small ghost" href="{{ url_for('editar', pedido_id=p['id']) }}">Editar</a>
+          <form method="post" action="{{ url_for('excluir', pedido_id=p['id']) }}"
                 onsubmit="return confirm('Excluir este pedido?');">
             <button class="btn small danger" type="submit">Excluir</button>
           </form>

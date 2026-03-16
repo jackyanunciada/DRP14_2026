@@ -2,60 +2,74 @@
 {% block content %}
 
 <section class="card">
+  <h1>
+    {% if modo == "criar" %}Novo pedido{% else %}Editar pedido #{{ pedido["id"] }}{% endif %}
+  </h1>
 
-  <div class="row">
-    <h1>Pedido #{{ chamado["id"] }}</h1>
+  <form class="form" method="post"
+        action="{% if modo == 'criar' %}{{ url_for('criar') }}{% else %}{{ url_for('atualizar', pedido_id=pedido['id']) }}{% endif %}">
 
-    <div class="actions">
-      <a class="btn ghost" href="{{ url_for('editar', chamado_id=chamado['id']) }}">Editar</a>
+    <label>Nome do cliente</label>
+    <input name="cliente" value="{{ pedido['cliente'] }}" placeholder="Ex.: Maria da Silva" required />
 
-      <form method="post"
-            action="{{ url_for('excluir', chamado_id=chamado['id']) }}"
-            onsubmit="return confirm('Excluir este pedido?');">
-        <button class="btn danger" type="submit">Excluir</button>
-      </form>
-    </div>
-  </div>
+    <label>Detalhes do pedido</label>
+    <textarea name="descricao" rows="5" placeholder="Ex.: 20 pães franceses e 10 pães integrais" required>{{ pedido['descricao'] }}</textarea>
 
+    <div class="grid">
+      <div>
+        <label>Quantidade / variedade</label>
+        <input name="quantidade_variedade" value="{{ pedido['quantidade_variedade'] }}" placeholder="Ex.: 20 franceses + 10 integrais" required />
+      </div>
 
-  <div class="info">
-
-    <div>
-      <span class="muted">Cliente</span><br>
-      <b>{{ chamado["titulo"] }}</b>
-    </div>
-
-    <div>
-      <span class="muted">Status</span><br>
-      <span class="pill">{{ chamado["status"] }}</span>
-    </div>
-
-    <div>
-      <span class="muted">Prioridade de entrega</span><br>
-      <b>{{ chamado["prioridade"] }}</b>
+      <div>
+        <label>Status</label>
+        <select name="status">
+          {% for opt in ["Pendente","Confirmado","Em separação","Aguardando entrega","Saiu para entrega","Entregue","Cancelado"] %}
+            <option value="{{ opt }}" {% if pedido["status"]==opt %}selected{% endif %}>{{ opt }}</option>
+          {% endfor %}
+        </select>
+      </div>
     </div>
 
-    <div>
-      <span class="muted">Criado em</span><br>
-      <span class="muted">{{ chamado["criado_em"] }}</span>
+    <div class="grid">
+      <div>
+        <label>Tipo de entrega</label>
+        <select name="tipo_entrega">
+          {% for opt in ["Retirada","Motoboy","Uber"] %}
+            <option value="{{ opt }}" {% if pedido["tipo_entrega"]==opt %}selected{% endif %}>{{ opt }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <label>Taxa de entrega (R$)</label>
+        <input name="taxa_entrega" type="number" step="0.01" value="{{ pedido['taxa_entrega'] }}" placeholder="Ex.: 12.00" required />
+      </div>
     </div>
 
-  </div>
+    <div class="grid">
+      <div>
+        <label>Prioridade de entrega</label>
+        <select name="prioridade">
+          {% for opt in ["Baixa","Média","Alta"] %}
+            <option value="{{ opt }}" {% if pedido["prioridade"]==opt %}selected{% endif %}>{{ opt }}</option>
+          {% endfor %}
+        </select>
+      </div>
 
+      <div>
+        <label>Valor total (R$)</label>
+        <input name="valor_total" type="number" step="0.01" value="{{ pedido['valor_total'] }}" placeholder="Ex.: 45.00" required />
+      </div>
+    </div>
 
-  <hr class="sep" />
-
-  <h3>Detalhes do pedido</h3>
-
-  <p class="pre">
-    {{ chamado["descricao"] }}
-  </p>
-
-
-  <div class="row end">
-    <a class="btn ghost" href="{{ url_for('index') }}">Voltar</a>
-  </div>
-
+    <div class="row end">
+      <a class="btn ghost" href="{{ url_for('index') }}">Cancelar</a>
+      <button class="btn" type="submit">
+        {% if modo == "criar" %}Criar pedido{% else %}Salvar alterações{% endif %}
+      </button>
+    </div>
+  </form>
 </section>
 
 {% endblock %}
