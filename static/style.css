@@ -256,6 +256,35 @@ body {
   margin-bottom: 10px;
 }
 
+.menu-item h3 {
+  margin: 10px 0 6px;
+}
+
+.menu-item p {
+  font-size: 14px;
+  color: #555;
+}
+
+.menu-item b {
+  color: #8b0000;
+}
+
+.whatsapp-btn {
+  background: #25d366;
+  color: white;
+}
+
+.whatsapp-btn:hover {
+  opacity: 0.9;
+}
+
+.delivery-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
 @media (max-width: 900px) {
   .thead,
   .trow {
