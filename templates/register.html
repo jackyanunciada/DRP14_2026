@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="login-page">
+  <div class="login-card">
+    
+    <h2>Criar conta</h2>
+    <p class="subtitle">Cadastre-se para começar a fazer pedidos</p>
+
+    <form method="POST">
+
+      <div class="input-group">
+        <label>Nome</label>
+        <input type="text" name="nome" required>
+      </div>
+
+      <div class="input-group">
+        <label>Email</label>
+        <input type="email" name="email" required>
+      </div>
+
+      <div class="input-group">
+        <label>Senha</label>
+        <input type="password" name="senha" required>
+      </div>
+
+      <button type="submit" class="btn-primary">Cadastrar</button>
+
+    </form>
+
+    <p class="register">
+      Já tem conta? <a href="/login">Entrar</a>
+    </p>
+
+  </div>
+</section>
+
+{% endblock %}

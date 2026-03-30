@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="destaques">
+  <h2>Cardápio</h2>
+  <p class="subtitulo">Escolha seus produtos e depois registre o pedido no sistema</p>
+
+  <div class="cards">
+
+    <div class="card">
+      <img src="{{ url_for('static', filename='img/cardapio.jpg') }}" alt="Pão Francês">
+      <h3>Pão Francês</h3>
+      <p>Unidade crocante e fresquinha. Ideal para o café da manhã.</p>
+      <p><strong>R$ 0,80 cada</strong></p>
+      <div style="padding: 0 14px 16px;">
+        <a href="{{ url_for('novo') }}" class="btn-banner">Fazer pedido</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="{{ url_for('static', filename='img/pedido.jpg') }}" alt="Pão Integral">
+      <h3>Pão Integral</h3>
+      <p>Opção mais saudável para o dia a dia, macio e saboroso.</p>
+      <p><strong>R$ 1,20 cada</strong></p>
+      <div style="padding: 0 14px 16px;">
+        <a href="{{ url_for('novo') }}" class="btn-banner">Fazer pedido</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="{{ url_for('static', filename='img/motoboy.jpg') }}" alt="Pão de Leite">
+      <h3>Pão de Leite</h3>
+      <p>Macio, levemente adocicado e ótimo para lanches.</p>
+      <p><strong>R$ 1,50 cada</strong></p>
+      <div style="padding: 0 14px 16px;">
+        <a href="{{ url_for('novo') }}" class="btn-banner">Fazer pedido</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="{{ url_for('static', filename='img/meus-pedidos.jpg') }}" alt="Baguete">
+      <h3>Baguete</h3>
+      <p>Casca crocante e miolo leve. Excelente para sanduíches.</p>
+      <p><strong>R$ 6,00 cada</strong></p>
+      <div style="padding: 0 14px 16px;">
+        <a href="{{ url_for('novo') }}" class="btn-banner">Fazer pedido</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="{{ url_for('static', filename='img/cardapio.jpg') }}" alt="Pão de Forma">
+      <h3>Pão de Forma</h3>
+      <p>Fatiado, prático e perfeito para o café ou lanche rápido.</p>
+      <p><strong>R$ 9,90 cada</strong></p>
+      <div style="padding: 0 14px 16px;">
+        <a href="{{ url_for('novo') }}" class="btn-banner">Fazer pedido</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="{{ url_for('static', filename='img/pedido.jpg') }}" alt="Pão Doce">
+      <h3>Pão Doce</h3>
+      <p>Leve, fofinho e ótimo para quem gosta de um toque adocicado.</p>
+      <p><strong>R$ 2,50 cada</strong></p>
+      <div style="padding: 0 14px 16px;">
+        <a href="{{ url_for('novo') }}" class="btn-banner">Fazer pedido</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="como-funciona">
+  <h2>Como pedir?</h2>
+
+  <div class="passos">
+    <div class="passo">1. Veja os produtos no cardápio</div>
+    <div class="passo">2. Clique em “Fazer pedido”</div>
+    <div class="passo">3. Informe quantidade e tipo de entrega</div>
+    <div class="passo">4. Acompanhe em “Meus pedidos”</div>
+  </div>
+</section>
+
+{% endblock %}

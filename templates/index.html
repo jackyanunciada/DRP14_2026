@@ -1,63 +1,95 @@
 {% extends "base.html" %}
+{% block title %}Meus pedidos - Pão na Porta{% endblock %}
+
 {% block content %}
 
-<section class="card">
-  <div class="row">
-    <h1>Pedidos</h1>
+<main class="pagina-conteudo pagina-pedidos">
 
-    <form class="filter" method="get" action="{{ url_for('index') }}">
-      <label>Status:</label>
-      <select name="status">
-        <option value="" {% if not status %}selected{% endif %}>Todos</option>
-        <option value="Pendente" {% if status=='Pendente' %}selected{% endif %}>Pendente</option>
-        <option value="Confirmado" {% if status=='Confirmado' %}selected{% endif %}>Confirmado</option>
-        <option value="Em separação" {% if status=='Em separação' %}selected{% endif %}>Em separação</option>
-        <option value="Aguardando entrega" {% if status=='Aguardando entrega' %}selected{% endif %}>Aguardando entrega</option>
-        <option value="Saiu para entrega" {% if status=='Saiu para entrega' %}selected{% endif %}>Saiu para entrega</option>
-        <option value="Entregue" {% if status=='Entregue' %}selected{% endif %}>Entregue</option>
-        <option value="Cancelado" {% if status=='Cancelado' %}selected{% endif %}>Cancelado</option>
-      </select>
-      <button class="btn" type="submit">Filtrar</button>
-      {% if status %}
-        <a class="btn ghost" href="{{ url_for('index') }}">Limpar</a>
-      {% endif %}
-    </form>
-  </div>
-
-  {% if pedidos|length == 0 %}
-    <p class="muted">Nenhum pedido encontrado. Clique em <b>Novo pedido</b>.</p>
-  {% else %}
-    <div class="table">
-      <div class="thead">
-        <div>ID</div>
-        <div>Cliente</div>
-        <div>Status</div>
-        <div>Entrega</div>
-        <div>Valor total</div>
-        <div>Criado em</div>
-        <div>Ações</div>
-      </div>
-
-      {% for p in pedidos %}
-      <div class="trow">
-        <div>#{{ p["id"] }}</div>
-        <div class="nowrap">{{ p["cliente"] }}</div>
-        <div><span class="pill">{{ p["status"] }}</span></div>
-        <div>{{ p["tipo_entrega"] }}</div>
-        <div>R$ {{ p["valor_total"] }}</div>
-        <div class="muted">{{ p["criado_em"] }}</div>
-        <div class="actions">
-          <a class="btn small" href="{{ url_for('ver', pedido_id=p['id']) }}">Ver</a>
-          <a class="btn small ghost" href="{{ url_for('editar', pedido_id=p['id']) }}">Editar</a>
-          <form method="post" action="{{ url_for('excluir', pedido_id=p['id']) }}"
-                onsubmit="return confirm('Excluir este pedido?');">
-            <button class="btn small danger" type="submit">Excluir</button>
-          </form>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for categoria, mensagem in messages %}
+        <div class="flash {{ categoria }}">
+          {{ mensagem }}
         </div>
-      </div>
       {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <section class="painel-topo">
+    <div>
+      <h1>Meus pedidos</h1>
+      <p>Acompanhe o andamento e consulte os detalhes dos seus pedidos.</p>
     </div>
+
+    <a href="{{ url_for('novo') }}" class="btn-banner">+ Novo pedido</a>
+  </section>
+
+  <section class="filtros-status">
+    <a href="{{ url_for('index') }}" class="filtro {% if not status %}ativo{% endif %}">Todos</a>
+    <a href="{{ url_for('index', status='Pendente') }}" class="filtro {% if status == 'Pendente' %}ativo{% endif %}">Pendente</a>
+    <a href="{{ url_for('index', status='Em preparo') }}" class="filtro {% if status == 'Em preparo' %}ativo{% endif %}">Em preparo</a>
+    <a href="{{ url_for('index', status='Saiu para entrega') }}" class="filtro {% if status == 'Saiu para entrega' %}ativo{% endif %}">Saiu para entrega</a>
+    <a href="{{ url_for('index', status='Entregue') }}" class="filtro {% if status == 'Entregue' %}ativo{% endif %}">Entregue</a>
+    <a href="{{ url_for('index', status='Cancelado') }}" class="filtro {% if status == 'Cancelado' %}ativo{% endif %}">Cancelado</a>
+  </section>
+
+  {% if pedidos %}
+    <section class="lista-pedidos">
+      {% for pedido in pedidos %}
+        <article class="pedido-card">
+          <div class="pedido-card-topo">
+            <div>
+              <h2>Pedido #{{ pedido["id"] }}</h2>
+              <p class="pedido-card-sub">Cliente: {{ pedido["cliente"] }}</p>
+            </div>
+
+            <span class="status-badge status-{{ pedido['status']|lower|replace(' ', '-') }}">
+              {{ pedido["status"] }}
+            </span>
+          </div>
+
+          <div class="pedido-info">
+            <p><strong>Itens:</strong> {{ pedido["descricao"] }}</p>
+            <p><strong>Quantidade / variedade:</strong> {{ pedido["quantidade_variedade"] }}</p>
+            <p><strong>Tipo de entrega:</strong> {{ pedido["tipo_entrega"] }}</p>
+          </div>
+
+          <div class="pedido-resumo-financeiro">
+            <div class="resumo-mini">
+              <span>Taxa de entrega</span>
+              <strong>R$ {{ "%.2f"|format(pedido["taxa_entrega"]) }}</strong>
+            </div>
+
+            <div class="resumo-mini destaque">
+              <span>Valor total</span>
+              <strong>R$ {{ "%.2f"|format(pedido["valor_total"]) }}</strong>
+            </div>
+          </div>
+
+          <div class="pedido-acoes">
+            <a href="{{ url_for('ver', pedido_id=pedido['id']) }}" class="acao-link">Ver</a>
+
+            {% if pedido["status"] == "Pendente" %}
+              <a href="{{ url_for('editar', pedido_id=pedido['id']) }}" class="acao-link">Editar</a>
+
+              <form method="post"
+                    action="{{ url_for('excluir', pedido_id=pedido['id']) }}"
+                    onsubmit="return confirm('Excluir este pedido?');">
+                <button type="submit" class="btn-excluir">Excluir</button>
+              </form>
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    </section>
+  {% else %}
+    <section class="vazio">
+      <h2>Nenhum pedido encontrado</h2>
+      <p>Você ainda não tem pedidos nesse filtro.</p>
+      <a href="{{ url_for('novo') }}" class="btn-banner">Criar pedido</a>
+    </section>
   {% endif %}
-</section>
+
+</main>
 
 {% endblock %}

@@ -1,75 +1,244 @@
 {% extends "base.html" %}
+{% block title %}
+  {% if modo == "criar" %}Novo pedido - Pão na Porta{% else %}Editar pedido - Pão na Porta{% endif %}
+{% endblock %}
+
 {% block content %}
 
-<section class="card">
-  <h1>
-    {% if modo == "criar" %}Novo pedido{% else %}Editar pedido #{{ pedido["id"] }}{% endif %}
-  </h1>
+<section class="destaques">
+  {% if modo == "criar" %}
+    <h2>Novo pedido</h2>
+    <p class="subtitulo">Selecione os itens e monte seu pedido</p>
+  {% else %}
+    <h2>Editar pedido #{{ pedido["id"] }}</h2>
+    <p class="subtitulo">Atualize seu pedido enquanto ele estiver pendente</p>
+  {% endif %}
 
-  <form class="form" method="post"
-        action="{% if modo == 'criar' %}{{ url_for('criar') }}{% else %}{{ url_for('atualizar', pedido_id=pedido['id']) }}{% endif %}">
+  <div class="form-card">
+    {% if modo == "criar" %}
+      <form method="post" action="{{ url_for('criar') }}" class="pedido-form pedido-form-produtos" id="formPedido">
+    {% else %}
+      <form method="post" action="{{ url_for('atualizar', pedido_id=pedido['id']) }}" class="pedido-form" id="formPedido">
+    {% endif %}
 
-    <label>Nome do cliente</label>
-    <input name="cliente" value="{{ pedido['cliente'] }}" placeholder="Ex.: Maria da Silva" required>
+      <input type="hidden" name="cliente" value="{{ session.get('usuario_nome', pedido['cliente']) }}">
 
-    <label>Detalhes do pedido</label>
-    <textarea name="descricao" rows="5" placeholder="Ex.: 30 pães franceses e 10 integrais" required>{{ pedido['descricao'] }}</textarea>
-
-    <div class="grid">
-      <div>
-        <label>Quantidade / variedade</label>
-        <input name="quantidade_variedade" value="{{ pedido['quantidade_variedade'] }}" placeholder="Ex.: 30 franceses + 10 integrais" required>
+      <div class="input-group full">
+        <label>Cliente</label>
+        <input
+          type="text"
+          value="{{ session.get('usuario_nome', pedido['cliente']) }}"
+          disabled
+        >
       </div>
 
-      <div>
-        <label>Status</label>
-        <select name="status">
-          {% for opt in ["Pendente","Confirmado","Em separação","Aguardando entrega","Saiu para entrega","Entregue","Cancelado"] %}
-            <option value="{{ opt }}" {% if pedido["status"] == opt %}selected{% endif %}>{{ opt }}</option>
-          {% endfor %}
-        </select>
-      </div>
-    </div>
+      {% if modo == "criar" %}
 
-    <div class="grid">
-      <div>
-        <label>Tipo de entrega</label>
-        <select name="tipo_entrega">
-          {% for opt in ["Retirada","Motoboy","Uber"] %}
-            <option value="{{ opt }}" {% if pedido["tipo_entrega"] == opt %}selected{% endif %}>{{ opt }}</option>
-          {% endfor %}
-        </select>
+        <div class="seletor-pedido full">
+          <div class="menu-itens">
+            <h3 class="titulo-bloco">Escolha os itens</h3>
+
+            <div class="grid-produtos">
+              {% for produto in produtos %}
+                <div class="produto-card"
+                     data-id="{{ produto.id }}"
+                     data-nome="{{ produto.nome }}"
+                     data-preco="{{ produto.preco }}">
+                  <div class="produto-topo">
+                    <h4>{{ produto.nome }}</h4>
+                    <span>R$ {{ "%.2f"|format(produto.preco) }}</span>
+                  </div>
+
+                  <div class="controle-qtd">
+                    <button type="button" class="qtd-btn" onclick="alterarQtd('{{ produto.id }}', -1)">−</button>
+                    <span id="qtd-{{ produto.id }}" class="qtd-numero">0</span>
+                    <button type="button" class="qtd-btn" onclick="alterarQtd('{{ produto.id }}', 1)">+</button>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <aside class="resumo-pedido">
+            <h3 class="titulo-bloco">Resumo do pedido</h3>
+
+            <div id="listaResumo" class="lista-resumo">
+              <p class="resumo-vazio">Nenhum item selecionado.</p>
+            </div>
+
+            <div class="resumo-linha">
+              <span>Subtotal</span>
+              <strong id="subtotalTexto">R$ 0,00</strong>
+            </div>
+
+            <div class="input-group">
+              <label for="tipo_entrega">Tipo de entrega</label>
+              <select id="tipo_entrega" name="tipo_entrega" required onchange="atualizarResumo()">
+                <option value="Retirada">Retirada</option>
+                <option value="Motoboy">Motoboy</option>
+                <option value="Uber Entrega">Uber Entrega</option>
+              </select>
+            </div>
+
+            <div class="resumo-linha">
+              <span>Taxa de entrega</span>
+              <strong id="taxaTexto">R$ 0,00</strong>
+            </div>
+
+            <div class="resumo-total">
+              <span>Total</span>
+              <strong id="totalTexto">R$ 0,00</strong>
+            </div>
+          </aside>
+        </div>
+
+        <input type="hidden" name="descricao" id="descricao">
+        <input type="hidden" name="quantidade_variedade" id="quantidade_variedade">
+        <input type="hidden" name="status" value="Pendente">
+        <input type="hidden" name="prioridade" value="Média">
+        <input type="hidden" name="subtotal" id="subtotal">
+        <input type="hidden" name="taxa_entrega" id="taxa_entrega" value="0">
+        <input type="hidden" name="valor_total" id="valor_total" value="0">
+
+      {% else %}
+
+        <div class="input-group full">
+          <label for="descricao">Itens do pedido</label>
+          <textarea id="descricao" name="descricao" rows="4" required>{{ pedido["descricao"] }}</textarea>
+        </div>
+
+        <div class="input-group full">
+          <label for="quantidade_variedade">Quantidade / variedade</label>
+          <input
+            type="text"
+            id="quantidade_variedade"
+            name="quantidade_variedade"
+            value="{{ pedido['quantidade_variedade'] }}"
+            required
+          >
+        </div>
+
+        <div class="input-group">
+          <label for="tipo_entrega">Tipo de entrega</label>
+          <select id="tipo_entrega" name="tipo_entrega" required>
+            <option value="Retirada" {% if pedido["tipo_entrega"]=="Retirada" %}selected{% endif %}>Retirada</option>
+            <option value="Motoboy" {% if pedido["tipo_entrega"]=="Motoboy" %}selected{% endif %}>Motoboy</option>
+            <option value="Uber Entrega" {% if pedido["tipo_entrega"]=="Uber Entrega" %}selected{% endif %}>Uber Entrega</option>
+          </select>
+        </div>
+
+        <input type="hidden" name="status" value="{{ pedido['status'] }}">
+        <input type="hidden" name="taxa_entrega" value="{{ pedido['taxa_entrega'] }}">
+        <input type="hidden" name="valor_total" value="{{ pedido['valor_total'] }}">
+        <input type="hidden" name="prioridade" value="{{ pedido['prioridade'] }}">
+        <input type="hidden" name="subtotal" value="{{ pedido['valor_total']|float - pedido['taxa_entrega']|float }}">
+
+      {% endif %}
+
+      <div class="form-actions">
+        <button class="btn-banner" type="submit">
+          {% if modo == "criar" %}
+            Salvar pedido
+          {% else %}
+            Atualizar pedido
+          {% endif %}
+        </button>
+
+        <a class="btn-secundario" href="{{ url_for('index') }}">Cancelar</a>
       </div>
 
-      <div>
-        <label>Taxa de entrega (R$)</label>
-        <input name="taxa_entrega" type="number" step="0.01" value="{{ pedido['taxa_entrega'] }}" placeholder="Ex.: 12.00" required>
-      </div>
-    </div>
-
-    <div class="grid">
-      <div>
-        <label>Prioridade de entrega</label>
-        <select name="prioridade">
-          {% for opt in ["Baixa","Média","Alta"] %}
-            <option value="{{ opt }}" {% if pedido["prioridade"] == opt %}selected{% endif %}>{{ opt }}</option>
-          {% endfor %}
-        </select>
-      </div>
-
-      <div>
-        <label>Valor total (R$)</label>
-        <input name="valor_total" type="number" step="0.01" value="{{ pedido['valor_total'] }}" placeholder="Ex.: 45.00" required>
-      </div>
-    </div>
-
-    <div class="row end">
-      <a class="btn ghost" href="{{ url_for('index') }}">Cancelar</a>
-      <button class="btn" type="submit">
-        {% if modo == "criar" %}Criar pedido{% else %}Salvar alterações{% endif %}
-      </button>
-    </div>
-  </form>
+    </form>
+  </div>
 </section>
+
+{% if modo == "criar" %}
+<script>
+  const produtosSelecionados = {};
+  const taxasEntrega = {
+    "Retirada": 0,
+    "Motoboy": 8,
+    "Uber Entrega": 12
+  };
+
+  function alterarQtd(produtoId, delta) {
+    const card = document.querySelector(`.produto-card[data-id="${produtoId}"]`);
+    const nome = card.dataset.nome;
+    const preco = parseFloat(card.dataset.preco);
+
+    if (!produtosSelecionados[produtoId]) {
+      produtosSelecionados[produtoId] = {
+        nome: nome,
+        preco: preco,
+        qtd: 0
+      };
+    }
+
+    produtosSelecionados[produtoId].qtd += delta;
+
+    if (produtosSelecionados[produtoId].qtd < 0) {
+      produtosSelecionados[produtoId].qtd = 0;
+    }
+
+    document.getElementById(`qtd-${produtoId}`).textContent = produtosSelecionados[produtoId].qtd;
+    atualizarResumo();
+  }
+
+  function atualizarResumo() {
+    const listaResumo = document.getElementById("listaResumo");
+    const tipoEntrega = document.getElementById("tipo_entrega").value;
+    const taxa = taxasEntrega[tipoEntrega] || 0;
+
+    let subtotal = 0;
+    let linhasResumo = [];
+    let descricaoLista = [];
+    let quantidadeLista = [];
+
+    Object.values(produtosSelecionados).forEach(item => {
+      if (item.qtd > 0) {
+        const totalItem = item.qtd * item.preco;
+        subtotal += totalItem;
+
+        linhasResumo.push(`
+          <div class="resumo-item">
+            <span>${item.nome}</span>
+            <strong>${item.qtd}x</strong>
+          </div>
+        `);
+
+        descricaoLista.push(item.nome);
+        quantidadeLista.push(`${item.nome}: ${item.qtd} unidade(s)`);
+      }
+    });
+
+    if (linhasResumo.length === 0) {
+      listaResumo.innerHTML = '<p class="resumo-vazio">Nenhum item selecionado.</p>';
+    } else {
+      listaResumo.innerHTML = linhasResumo.join("");
+    }
+
+    const total = subtotal + taxa;
+
+    document.getElementById("subtotalTexto").textContent = `R$ ${subtotal.toFixed(2).replace(".", ",")}`;
+    document.getElementById("taxaTexto").textContent = `R$ ${taxa.toFixed(2).replace(".", ",")}`;
+    document.getElementById("totalTexto").textContent = `R$ ${total.toFixed(2).replace(".", ",")}`;
+
+    document.getElementById("subtotal").value = subtotal.toFixed(2);
+    document.getElementById("taxa_entrega").value = taxa.toFixed(2);
+    document.getElementById("valor_total").value = total.toFixed(2);
+    document.getElementById("descricao").value = descricaoLista.join(", ");
+    document.getElementById("quantidade_variedade").value = quantidadeLista.join(" | ");
+  }
+
+  document.getElementById("formPedido").addEventListener("submit", function(event) {
+    const descricao = document.getElementById("descricao").value.trim();
+    const quantidadeVariedade = document.getElementById("quantidade_variedade").value.trim();
+
+    if (!descricao || !quantidadeVariedade) {
+      event.preventDefault();
+      alert("Selecione pelo menos um item antes de salvar o pedido.");
+    }
+  });
+</script>
+{% endif %}
 
 {% endblock %}

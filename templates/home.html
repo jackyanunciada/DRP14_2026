@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pão na Porta</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="topo-mobile">
+  <div class="topo-inner">
+    <a href="{{ url_for('home') }}" class="logo-link texto-logo">
+      <span class="logo-titulo">Pão na Porta</span>
+      <span class="logo-sub">Padaria online</span>
+    </a>
+
+    <button class="menu-btn" onclick="abrirMenu()">☰</button>
+  </div>
+</header>
+
+<div class="overlay" id="overlay" onclick="fecharMenu()"></div>
+
+<aside class="menu-lateral" id="menuLateral">
+  <div class="menu-topo">
+    <a href="{{ url_for('home') }}" class="logo-link texto-logo-menu">
+      <span class="logo-titulo">Pão na Porta</span>
+      <span class="logo-sub">Padaria online</span>
+    </a>
+    <button class="fechar-btn" onclick="fecharMenu()">✕</button>
+  </div>
+
+  <nav class="menu-links">
+    <a href="{{ url_for('home') }}">Home</a>
+    <a href="{{ url_for('cardapio') }}">Cardápio</a>
+    <a href="{{ url_for('login') }}">Login</a>
+    <a href="{{ url_for('cadastro') }}">Cadastro</a>
+  </nav>
+</aside>
+
+<section class="banner-principal">
+  <div class="banner-texto">
+    <h1>Faça seus pedidos<br>com praticidade</h1>
+    <p>Escolha os produtos, registre o pedido e acompanhe a entrega.</p>
+    <a href="{{ url_for('cardapio') }}" class="btn-banner">Fazer pedido</a>
+  </div>
+</section>
+
+<div class="slider-dots">
+  <span class="dot ativo"></span>
+</div>
+
+<section class="faixa-info">
+  Entrega rápida com motoboy, Uber ou retirada no local.
+</section>
+
+<section class="destaques">
+  <h2>NOVIDADE!</h2>
+  <p class="subtitulo">Seu pedido em um sistema simples e visual</p>
+
+  <div class="cards">
+
+    <a href="{{ url_for('cardapio') }}" class="card-link">
+      <div class="card">
+        <div class="card-icon">🍞</div>
+        <h3>Cardápio</h3>
+        <p>Veja os produtos disponíveis</p>
+      </div>
+    </a>
+
+    <a href="{{ url_for('novo') }}" class="card-link">
+      <div class="card">
+        <div class="card-icon">📝</div>
+        <h3>Novo pedido</h3>
+        <p>Monte seu pedido de forma rápida</p>
+      </div>
+    </a>
+
+    <a href="{{ url_for('novo') }}" class="card-link">
+      <div class="card">
+        <div class="card-icon">🚚</div>
+        <h3>Entrega</h3>
+        <p>Motoboy, Uber ou retirada</p>
+      </div>
+    </a>
+
+    <a href="{{ url_for('login') }}" class="card-link">
+      <div class="card">
+        <div class="card-icon">📦</div>
+        <h3>Meus pedidos</h3>
+        <p>Acompanhe tudo em um só lugar</p>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<section class="como-funciona">
+  <h2>Como funciona?</h2>
+
+  <div class="passos">
+    <div class="passo">1. Crie sua conta</div>
+    <div class="passo">2. Escolha os produtos</div>
+    <div class="passo">3. Defina a entrega</div>
+    <div class="passo">4. Acompanhe seu pedido</div>
+  </div>
+</section>
+
+<section class="box-final">
+  <h2>Peça com facilidade</h2>
+  <p>Um sistema simples, visual e rápido para organizar seus pedidos de pão.</p>
+  <a href="{{ url_for('cardapio') }}" class="btn-banner">Ver cardápio</a>
+</section>
+
+<script>
+function abrirMenu() {
+  document.getElementById("menuLateral").classList.add("ativo");
+  document.getElementById("overlay").classList.add("ativo");
+}
+
+function fecharMenu() {
+  document.getElementById("menuLateral").classList.remove("ativo");
+  document.getElementById("overlay").classList.remove("ativo");
+}
+</script>
+
+</body>
+</html>
