@@ -55,7 +55,7 @@ Aplicação publicada em ambiente cloud utilizando **Render**, com deploy integr
 - ## 📷 Screenshots
 
 ### 🏠 Tela inicial
-![Home](assets/home.png)
+![Home](assets/home_v1.png)
 
 ### 🔐 Tela de login
 ![Login](assets/login.png)
