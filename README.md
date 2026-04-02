@@ -50,4 +50,15 @@ Aplicação publicada em ambiente cloud utilizando **Render**, com deploy integr
 - Estruturação de rotas, templates e lógica de backend  
 - Manipulação de formulários e dados  
 - Implementação de regras de negócio  
-- Publicação de aplicação em ambiente cloud  
+- Publicação de aplicação em ambiente cloud
+
+- ## 📷 Screenshots
+
+### 🏠 Tela inicial
+![Home](assets/home.png)
+
+### 🔐 Tela de login
+![Login](assets/login.png)
+
+### 📋 Menu
+![Menu](assets/menu.png)
