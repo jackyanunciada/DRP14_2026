@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="pagina-conteudo">
+  <h1>Painel Admin - Pedidos</h1>
+
+  {% for pedido in pedidos %}
+    <div class="pedido-card">
+
+      <h3>Pedido #{{ pedido.id }}</h3>
+      <p><strong>Cliente:</strong> {{ pedido.cliente }}</p>
+      <p><strong>Status:</strong> {{ pedido.status }}</p>
+
+      <form method="POST" action="{{ url_for('admin_atualizar_status', pedido_id=pedido.id) }}">
+        <select name="status">
+          <option>Pendente</option>
+          <option>Em preparo</option>
+          <option>Saiu para entrega</option>
+          <option>Entregue</option>
+          <option>Cancelado</option>
+        </select>
+
+        <button type="submit">Atualizar</button>
+      </form>
+
+    </div>
+  {% endfor %}
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="pagina-simples">
+
+  <div class="bloco-branco">
+
+    <h1>Painel Admin</h1>
+    <p class="subtitulo">Gerencie os pedidos da padaria</p>
+
+    {% if pedidos %}
+      {% for pedido in pedidos %}
+
+      <div class="pedido-card">
+
+        <div class="pedido-topo">
+          <h3>Pedido #{{ pedido.id }}</h3>
+
+          <span class="status-badge status-{{ pedido.status|lower|replace(' ', '-') }}">
+            {{ pedido.status }}
+          </span>
+        </div>
+
+        <p><strong>Cliente:</strong> {{ pedido.nome }}</p>
+        <p><strong>Itens:</strong> {{ pedido.descricao }}</p>
+
+        <form method="POST" action="{{ url_for('admin_atualizar', pedido_id=pedido.id) }}" class="form-status">
+
+          <select name="status">
+            <option {% if pedido.status == 'Pendente' %}selected{% endif %}>Pendente</option>
+            <option {% if pedido.status == 'Em preparo' %}selected{% endif %}>Em preparo</option>
+            <option {% if pedido.status == 'Saiu para entrega' %}selected{% endif %}>Saiu para entrega</option>
+            <option {% if pedido.status == 'Entregue' %}selected{% endif %}>Entregue</option>
+            <option {% if pedido.status == 'Cancelado' %}selected{% endif %}>Cancelado</option>
+          </select>
+
+          <button type="submit" class="btn-acao">Atualizar</button>
+
+        </form>
+
+      </div>
+
+      {% endfor %}
+    {% else %}
+      <p>Nenhum pedido encontrado.</p>
+    {% endif %}
+
+  </div>
+
+</section>
+
+{% endblock %}

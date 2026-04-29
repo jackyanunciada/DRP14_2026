@@ -746,6 +746,11 @@ img {
   margin-bottom: 18px;
 }
 
+.bloco-branco {
+  max-width: 900px;
+  margin: 0 auto 18px;
+}
+
 /* RESPONSIVO */
 @media (max-width: 768px) {
   .topo-mobile {
@@ -1449,4 +1454,203 @@ img {
   .resumo-pedido {
     position: static;
   }
+}
+
+/* ===== AJUSTE FORMULÁRIO CADASTRO (SEM QUEBRAR NADA) ===== */
+
+.login-card {
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.input-group {
+  margin-bottom: 12px;
+}
+
+.input-group input {
+  padding: 10px 12px;
+}
+
+.login-card h2 {
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  margin-bottom: 18px;
+}
+
+/* ===== NOTIFICAÇÕES ===== */
+
+.topo-acoes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.notificacao {
+  position: relative;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.badge {
+  background: red;
+  color: white;
+  font-size: 10px;
+  border-radius: 50%;
+  padding: 3px 6px;
+  position: absolute;
+  top: -5px;
+  right: -8px;
+}
+
+.dropdown-notificacao {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 30px;
+  background: white;
+  width: 220px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  padding: 10px;
+  z-index: 999;
+}
+
+.notificacao:hover .dropdown-notificacao {
+  display: block;
+}
+
+.item-notificacao {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+  font-size: 13px;
+}
+
+.pedido-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.pedido-card h3 {
+  margin-bottom: 10px;
+}
+
+.pedido-card p {
+  margin: 5px 0;
+}
+
+.pedido-card form {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.pedido-card select {
+  padding: 5px;
+  border-radius: 8px;
+}
+
+.pedido-card button {
+  background: #c96a2b;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.topo-acoes {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.notificacao {
+  position: relative;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: red;
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 50%;
+}
+
+.dropdown-notificacao {
+  display: none;
+  position: absolute;
+  top: 30px;
+  right: 0;
+  background: white;
+  width: 220px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  padding: 10px;
+  z-index: 999;
+}
+
+.notificacao:hover .dropdown-notificacao {
+  display: block;
+}
+
+.item-notificacao {
+  font-size: 13px;
+  padding: 6px;
+  border-bottom: 1px solid #eee;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.menu-item {
+  background: white;
+  border-radius: 14px;
+  padding: 12px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.menu-item img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.preco {
+  display: block;
+  margin: 8px 0;
+  font-weight: bold;
+  color: #c46b2c;
+}
+
+.btn-add {
+  background: #c46b2c;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.produto-img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 10px;
 }

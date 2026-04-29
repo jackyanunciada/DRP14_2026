@@ -3,6 +3,9 @@ CREATE TABLE IF NOT EXISTS usuarios (
     nome TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
     senha TEXT NOT NULL,
+    cpf TEXT,
+    data_nascimento TEXT,
+    endereco TEXT,
     perfil TEXT NOT NULL DEFAULT 'cliente'
 );
 
@@ -18,5 +21,14 @@ CREATE TABLE IF NOT EXISTS pedidos (
     valor_total REAL NOT NULL DEFAULT 0,
     prioridade TEXT NOT NULL DEFAULT 'Média',
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+);
+
+CREATE TABLE IF NOT EXISTS notificacoes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    usuario_id INTEGER,
+    mensagem TEXT NOT NULL,
+    lida INTEGER DEFAULT 0,
+    criada_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 );

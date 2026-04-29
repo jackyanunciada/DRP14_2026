@@ -38,13 +38,49 @@ def login_required(func):
 init_db()
 
 
-PRODUTOS_CARDAPIO = [
-    {"id": "frances", "nome": "Pão Francês", "preco": 1.00},
-    {"id": "forma", "nome": "Pão de Forma", "preco": 12.00},
-    {"id": "integral", "nome": "Pão Integral", "preco": 14.00},
-    {"id": "croissant", "nome": "Croissant", "preco": 8.00},
-    {"id": "sonho", "nome": "Sonho", "preco": 9.00},
-    {"id": "cuca", "nome": "Cuca", "preco": 18.00},
+PRODUTOS_CARDAPIO =  PRODUTOS_CARDAPIO = [
+    {
+        "id": 1,
+        "nome": "Pão Francês",
+        "preco": 1.00,
+        "imagem": "https://images.unsplash.com/photo-1509440159596-0249088772ff",
+        "descricao": "Unidade crocante e fresquinha."
+    },
+    {
+        "id": 2,
+        "nome": "Pão de Forma",
+        "preco": 12.00,
+        "imagem": "https://images.unsplash.com/photo-1608198093002-ad4e005484ec",
+        "descricao": "Ideal para sanduíches."
+    },
+    {
+        "id": 3,
+        "nome": "Pão Integral",
+        "preco": 14.00,
+        "imagem": "https://images.unsplash.com/photo-1509440159596-0249088772ff",
+        "descricao": "Opção mais saudável."
+    },
+    {
+        "id": 4,
+        "nome": "Croissant",
+        "preco": 8.00,
+        "imagem": "https://images.unsplash.com/photo-1555507036-ab1f4038808a",
+        "descricao": "Folhado amanteigado."
+    },
+    {
+        "id": 5,
+        "nome": "Sonho",
+        "preco": 9.00,
+        "imagem": "https://images.unsplash.com/photo-1603532648955-039310d9ed75",
+        "descricao": "Recheado e delicioso."
+    },
+    {
+        "id": 6,
+        "nome": "Cuca",
+        "preco": 18.00,
+        "imagem": "https://images.unsplash.com/photo-1608198093002-ad4e005484ec",
+        "descricao": "Doce tradicional."
+    }
 ]
 
 
@@ -55,6 +91,37 @@ def calcular_taxa_entrega(tipo_entrega: str) -> float:
         "Uber Entrega": 12.0
     }
     return taxas.get(tipo_entrega, 0.0)
+
+
+# 🔔 FUNÇÃO DE NOTIFICAÇÕES
+def get_notificacoes(usuario_id):
+    conn = get_connection()
+
+    notificacoes = conn.execute("""
+        SELECT * FROM notificacoes
+        WHERE usuario_id = ?
+        ORDER BY criada_em DESC
+        LIMIT 5
+    """, (usuario_id,)).fetchall()
+
+    nao_lidas = conn.execute("""
+        SELECT COUNT(*) as total
+        FROM notificacoes
+        WHERE usuario_id = ? AND lida = 0
+    """, (usuario_id,)).fetchone()["total"]
+
+    conn.close()
+
+    return notificacoes, nao_lidas
+
+
+# 🔔 INJETAR NOTIFICAÇÕES NO TEMPLATE
+@app.context_processor
+def inject_notificacoes():
+    if "usuario_id" in session:
+        notificacoes, nao_lidas = get_notificacoes(session["usuario_id"])
+        return dict(notificacoes=notificacoes, nao_lidas=nao_lidas)
+    return dict(notificacoes=[], nao_lidas=0)
 
 
 @app.route("/")
@@ -99,6 +166,7 @@ def home():
 @app.route("/novo")
 @login_required
 def novo():
+    item_selecionado = request.args.get("item")
     pedido = {
         "id": "",
         "cliente": session.get("usuario_nome", ""),
@@ -230,6 +298,7 @@ def atualizar(pedido_id):
         return redirect(url_for("editar", pedido_id=pedido_id))
 
     conn = get_connection()
+
     cursor = conn.execute("""
         UPDATE pedidos
         SET cliente = ?,
@@ -253,6 +322,16 @@ def atualizar(pedido_id):
         pedido_id,
         session["usuario_id"]
     ))
+
+    # 🔔 NOTIFICAÇÃO AUTOMÁTICA
+    mensagem = f"Seu pedido #{pedido_id} agora está: {status}"
+
+    conn.execute("""
+        INSERT INTO notificacoes (usuario_id, mensagem)
+        VALUES (?, ?)
+    """, (session["usuario_id"], mensagem))
+
+    # ✅ UM ÚNICO COMMIT
     conn.commit()
     conn.close()
 
@@ -286,12 +365,16 @@ def excluir(pedido_id):
     return redirect(url_for("index"))
 
 
+# 🔥 CADASTRO ATUALIZADO
 @app.route("/cadastro", methods=["GET", "POST"])
 def cadastro():
     if request.method == "POST":
         nome = request.form["nome"].strip()
         email = request.form["email"].strip().lower()
         senha = request.form["senha"]
+        cpf = request.form["cpf"].strip()
+        data_nascimento = request.form["data_nascimento"]
+        endereco = request.form["endereco"].strip()
 
         conn = get_connection()
         usuario_existente = conn.execute(
@@ -307,9 +390,10 @@ def cadastro():
         senha_hash = generate_password_hash(senha)
 
         conn.execute("""
-            INSERT INTO usuarios (nome, email, senha)
-            VALUES (?, ?, ?)
-        """, (nome, email, senha_hash))
+            INSERT INTO usuarios (nome, email, senha, cpf, data_nascimento, endereco)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (nome, email, senha_hash, cpf, data_nascimento, endereco))
+
         conn.commit()
         conn.close()
 
@@ -335,6 +419,7 @@ def login():
         if usuario and check_password_hash(usuario["senha"], senha):
             session["usuario_id"] = usuario["id"]
             session["usuario_nome"] = usuario["nome"]
+            session["perfil"] = usuario["perfil"]  # 🔥 
 
             flash("Login realizado com sucesso!", "success")
             return redirect(url_for("index"))
@@ -351,5 +436,153 @@ def logout():
     return redirect(url_for("login"))
 
 
+@app.route("/perfil", methods=["GET", "POST"])
+@login_required
+def perfil():
+    conn = get_connection()
+
+    if request.method == "POST":
+        nome = request.form["nome"].strip()
+        cpf = request.form["cpf"].strip()
+        data_nascimento = request.form["data_nascimento"]
+        endereco = request.form["endereco"].strip()
+
+        conn.execute("""
+            UPDATE usuarios
+            SET nome = ?, cpf = ?, data_nascimento = ?, endereco = ?
+            WHERE id = ?
+        """, (nome, cpf, data_nascimento, endereco, session["usuario_id"]))
+
+        conn.commit()
+
+        session["usuario_nome"] = nome
+
+        flash("Dados atualizados com sucesso!", "success")
+        return redirect(url_for("perfil"))
+
+    usuario = conn.execute(
+        "SELECT * FROM usuarios WHERE id = ?",
+        (session["usuario_id"],)
+    ).fetchone()
+
+    conn.close()
+
+    return render_template("perfil.html", usuario=usuario)
+
+
+def admin_required(func):  #ROTA ADMIN
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if "usuario_id" not in session:
+            return redirect(url_for("login"))
+
+        conn = get_connection()
+        usuario = conn.execute(
+            "SELECT * FROM usuarios WHERE id = ?",
+            (session["usuario_id"],)
+        ).fetchone()
+        conn.close()
+
+        if usuario["perfil"] != "admin":
+            flash("Acesso restrito.", "error")
+            return redirect(url_for("index"))
+
+        return func(*args, **kwargs)
+    return wrapper
+
+@app.route("/admin") #ROTA ADMIN
+@admin_required
+def admin():
+    conn = get_connection()
+    pedidos = conn.execute("""
+        SELECT pedidos.*, usuarios.nome
+        FROM pedidos
+        JOIN usuarios ON pedidos.usuario_id = usuarios.id
+        ORDER BY pedidos.id DESC
+    """).fetchall()
+    conn.close()
+
+    return render_template("admin.html", pedidos=pedidos)
+
+# ATUALIZAR STATUS (ADMIN)
+@app.route("/admin/atualizar/<int:pedido_id>", methods=["POST"]) 
+@admin_required
+def admin_atualizar(pedido_id):
+    status = request.form.get("status")
+
+    conn = get_connection()
+
+    pedido = conn.execute(
+        "SELECT * FROM pedidos WHERE id = ?",
+        (pedido_id,)
+    ).fetchone()
+
+    conn.execute("""
+        UPDATE pedidos
+        SET status = ?
+        WHERE id = ?
+    """, (status, pedido_id))
+
+    # 🔔 NOTIFICAÇÃO PARA O CLIENTE
+    mensagem = f"Seu pedido #{pedido_id} foi atualizado para: {status}"
+
+    conn.execute("""
+        INSERT INTO notificacoes (usuario_id, mensagem)
+        VALUES (?, ?)
+    """, (pedido["usuario_id"], mensagem))
+
+    conn.commit()
+    conn.close()
+
+    flash("Status atualizado!", "success")
+    return redirect(url_for("admin"))
+
+@app.route("/admin/pedidos")
+@login_required
+def admin_pedidos():
+    if session.get("perfil") != "admin":
+        flash("Acesso negado", "error")
+        return redirect(url_for("home"))
+
+    conn = get_connection()
+    pedidos = conn.execute("SELECT * FROM pedidos ORDER BY criado_em DESC").fetchall()
+    conn.close()
+
+    return render_template("admin_pedidos.html", pedidos=pedidos)
+
+@app.route("/admin/pedido/<int:pedido_id>/status", methods=["POST"])
+@login_required
+def admin_atualizar_status(pedido_id):
+    if session.get("perfil") != "admin":
+        flash("Acesso negado", "error")
+        return redirect(url_for("home"))
+
+    novo_status = request.form.get("status")
+
+    conn = get_connection()
+    conn.execute("UPDATE pedidos SET status=? WHERE id=?", (novo_status, pedido_id))
+    conn.commit()
+    conn.close()
+
+    flash("Status atualizado!", "success")
+    return redirect(url_for("admin_pedidos"))
+
+@app.route("/faq")
+def faq():
+    return render_template("faq.html")
+
+
+
 if __name__ == "__main__":
+    conn = get_connection()
+    conn.execute("""
+        UPDATE usuarios
+        SET perfil = 'admin'
+        WHERE email = 'jaqueline.anunciada@gmail.com'
+    """)
+    conn.commit()
+    conn.close()
+
+    print("ADMIN ATUALIZADO")
+
     app.run(debug=True)

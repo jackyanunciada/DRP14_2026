@@ -8,79 +8,113 @@
 </head>
 <body>
 
-  <header class="topo-mobile">
-    <div class="topo-inner">
-      <a href="{{ url_for('home') }}" class="logo-link">
-        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Pão na Porta" class="logo-img">
-      </a>
+<header class="topo-mobile">
+  <div class="topo-inner">
 
-      <button class="menu-btn" type="button" onclick="abrirMenu()" aria-label="Abrir menu">☰</button>
-    </div>
-  </header>
+    <a href="{{ url_for('home') }}" class="logo-link">
+      <img src="{{ url_for('static', filename='img/logo.png') }}" class="logo-img">
+    </a>
 
-  <div id="overlay" class="overlay" onclick="fecharMenu()"></div>
-
-  <aside id="menuLateral" class="menu-lateral">
-    <div class="menu-topo">
-      <a href="{{ url_for('home') }}" class="logo-link">
-        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Pão na Porta" class="menu-logo-img">
-      </a>
-
-      <button class="fechar-btn" type="button" onclick="fecharMenu()" aria-label="Fechar menu">×</button>
-    </div>
-
-    {% if session.get('usuario_nome') %}
-      <div class="menu-usuario">
-        Olá, {{ session.get('usuario_nome') }}
-      </div>
-    {% endif %}
-
-    <nav class="menu-links">
-      <a href="{{ url_for('home') }}" onclick="fecharMenu()">Home</a>
+    <!-- 🔥 ADICIONADO: AÇÕES (SINO + MENU) -->
+    <div class="topo-acoes">
 
       {% if session.get('usuario_id') %}
-        <a href="{{ url_for('index') }}" onclick="fecharMenu()">Meus pedidos</a>
-        <a href="{{ url_for('novo') }}" onclick="fecharMenu()">Novo pedido</a>
-      {% endif %}
+      <div class="notificacao">
+        🔔
 
-      <a href="{{ url_for('cardapio') }}" onclick="fecharMenu()">Cardápio</a>
+        {% if nao_lidas > 0 %}
+          <span class="badge">{{ nao_lidas }}</span>
+        {% endif %}
 
-      {% if session.get('usuario_id') %}
-        <a href="{{ url_for('logout') }}" onclick="fecharMenu()">Sair</a>
-      {% else %}
-        <a href="{{ url_for('login') }}" onclick="fecharMenu()">Entrar</a>
-        <a href="{{ url_for('cadastro') }}" onclick="fecharMenu()">Cadastrar</a>
-      {% endif %}
-    </nav>
-  </aside>
-
-  <main class="pagina-conteudo">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <div class="flash-area">
-          {% for category, message in messages %}
-            <div class="flash {{ category }}">
-              {{ message }}
+        <div class="dropdown-notificacao">
+          {% for n in notificacoes %}
+            <div class="item-notificacao">
+              {{ n.mensagem }}
             </div>
+          {% else %}
+            <div class="item-notificacao">Sem notificações</div>
           {% endfor %}
         </div>
+      </div>
       {% endif %}
-    {% endwith %}
 
-    {% block content %}{% endblock %}
-  </main>
+      <button class="menu-btn" onclick="abrirMenu()">☰</button>
 
-  <script>
-    function abrirMenu() {
-      document.getElementById("menuLateral").classList.add("ativo");
-      document.getElementById("overlay").classList.add("ativo");
-    }
+    </div>
 
-    function fecharMenu() {
-      document.getElementById("menuLateral").classList.remove("ativo");
-      document.getElementById("overlay").classList.remove("ativo");
-    }
-  </script>
+  </div>
+</header>
+
+<div id="overlay" class="overlay" onclick="fecharMenu()"></div>
+
+<aside id="menuLateral" class="menu-lateral">
+  <div class="menu-topo">
+    <a href="{{ url_for('home') }}">
+      <img src="{{ url_for('static', filename='img/logo.png') }}" class="menu-logo-img">
+    </a>
+    <button class="fechar-btn" onclick="fecharMenu()">×</button>
+  </div>
+
+  {% if session.get('usuario_nome') %}
+    <div class="menu-usuario">
+      Olá, {{ session.get('usuario_nome') }}
+    </div>
+  {% endif %}
+
+  <nav class="menu-links">
+    <a href="{{ url_for('home') }}">Home</a>
+
+    {% if session.get('usuario_id') %}
+      <a href="{{ url_for('index') }}">Meus pedidos</a>
+      <a href="{{ url_for('novo') }}">Novo pedido</a>
+      <a href="{{ url_for('perfil') }}">Meu perfil</a>
+
+      {% if session.get('perfil') == 'admin' %}
+        <a href="{{ url_for('admin') }}">Admin</a>
+      {% endif %}
+    {% endif %}
+
+    <a href="{{ url_for('cardapio') }}">Cardápio</a>
+
+    <!-- 🔥 ADICIONADO (FAQ) -->
+    <a href="{{ url_for('faq') }}">FAQ</a>
+
+    {% if session.get('usuario_id') %}
+      <a href="{{ url_for('logout') }}">Sair</a>
+    {% else %}
+      <a href="{{ url_for('login') }}">Entrar</a>
+      <a href="{{ url_for('cadastro') }}">Cadastrar</a>
+    {% endif %}
+  </nav>
+</aside>
+
+<main class="pagina-conteudo">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-area">
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</main>
+
+<script>
+function abrirMenu() {
+  document.getElementById("menuLateral").classList.add("ativo");
+  document.getElementById("overlay").classList.add("ativo");
+}
+
+function fecharMenu() {
+  document.getElementById("menuLateral").classList.remove("ativo");
+  document.getElementById("overlay").classList.remove("ativo");
+}
+</script>
 
 </body>
 </html>

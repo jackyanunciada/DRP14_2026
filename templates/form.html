@@ -44,10 +44,13 @@
                      data-id="{{ produto.id }}"
                      data-nome="{{ produto.nome }}"
                      data-preco="{{ produto.preco }}">
-                  <div class="produto-topo">
-                    <h4>{{ produto.nome }}</h4>
-                    <span>R$ {{ "%.2f"|format(produto.preco) }}</span>
-                  </div>
+                    <!-- 🔥 IMAGEM -->
+  <img src="{{ produto.imagem }}" class="produto-img">
+
+  <div class="produto-topo">
+    <h4>{{ produto.nome }}</h4>
+    <span>R$ {{ "%.2f"|format(produto.preco) }}</span>
+  </div>
 
                   <div class="controle-qtd">
                     <button type="button" class="qtd-btn" onclick="alterarQtd('{{ produto.id }}', -1)">−</button>
@@ -79,6 +82,16 @@
                 <option value="Uber Entrega">Uber Entrega</option>
               </select>
             </div>
+
+            <!-- 🔥 NOVO BLOCO -->
+            <div class="input-group">
+  <label for="pagamento">Forma de pagamento</label>
+  <select id="pagamento" name="pagamento" required>
+    <option value="Dinheiro">Dinheiro</option>
+    <option value="Cartão">Cartão</option>
+    <option value="PIX">PIX</option>
+  </select>
+</div>
 
             <div class="resumo-linha">
               <span>Taxa de entrega</span>
@@ -229,15 +242,42 @@
     document.getElementById("quantidade_variedade").value = quantidadeLista.join(" | ");
   }
 
-  document.getElementById("formPedido").addEventListener("submit", function(event) {
-    const descricao = document.getElementById("descricao").value.trim();
-    const quantidadeVariedade = document.getElementById("quantidade_variedade").value.trim();
+  let enviando = false;
 
-    if (!descricao || !quantidadeVariedade) {
-      event.preventDefault();
-      alert("Selecione pelo menos um item antes de salvar o pedido.");
+document.getElementById("formPedido").addEventListener("submit", function(event) {
+  if (enviando) {
+    event.preventDefault();
+    return;
+  }
+
+  const descricao = document.getElementById("descricao").value.trim();
+  const quantidadeVariedade = document.getElementById("quantidade_variedade").value.trim();
+
+  if (!descricao || !quantidadeVariedade) {
+    event.preventDefault();
+    alert("Selecione pelo menos um item antes de salvar o pedido.");
+    return;
+  }
+
+  enviando = true;
+});
+
+  // 🔥 CORREÇÃO AQUI (DENTRO DO SCRIPT)
+  window.onload = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const item = urlParams.get("item");
+
+    if (item) {
+      const cards = document.querySelectorAll(".produto-card");
+
+      cards.forEach(card => {
+        if (card.dataset.nome === item) {
+          const id = card.dataset.id;
+          alterarQtd(id, 1);
+        }
+      });
     }
-  });
+  };
 </script>
 {% endif %}
 

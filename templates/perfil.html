@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="login-page">
+  <div class="login-card">
+    
+    <h2>Meu perfil</h2>
+    <p class="subtitle">Atualize seus dados</p>
+
+    <form method="POST">
+
+      <div class="input-group">
+        <label>Nome completo</label>
+        <input type="text" name="nome" value="{{ usuario.nome }}" required>
+      </div>
+
+      <div class="input-group">
+        <label>CPF</label>
+        <input type="text" name="cpf" value="{{ usuario.cpf or '' }}">
+      </div>
+
+      <div class="input-group">
+        <label>Data de nascimento</label>
+        <input type="date" name="data_nascimento" value="{{ usuario.data_nascimento or '' }}">
+      </div>
+
+      <div class="input-group">
+        <label>Endereço</label>
+        <input type="text" name="endereco" value="{{ usuario.endereco or '' }}">
+      </div>
+
+      <button type="submit" class="btn-primary">Salvar alterações</button>
+
+    </form>
+
+  </div>
+</section>
+
+{% endblock %}

@@ -1,82 +1,53 @@
 {% extends "base.html" %}
+
 {% block content %}
 
-<section class="card">
-  <div class="row">
-    <div>
-      <h1>Cardápio</h1>
-      <p class="muted">Escolha os produtos e depois registre o pedido no sistema.</p>
+<section class="pagina-simples">
+
+  <div class="bloco-branco">
+
+    <h1>Cardápio</h1>
+    <p class="subtitulo">Escolha seus produtos</p>
+
+    <div class="menu-grid">
+
+      {% for produto in produtos %}
+
+      <div class="menu-item">
+
+        <!-- IMAGEM -->
+        <img src="{{ produto.imagem }}" alt="{{ produto.nome }}">
+
+        <!-- NOME -->
+        <h3>{{ produto.nome }}</h3>
+
+        <!-- DESCRIÇÃO -->
+        <p>
+          {% if produto.descricao %}
+            {{ produto.descricao }}
+          {% else %}
+            Produto fresco e delicioso.
+          {% endif %}
+        </p>
+
+        <!-- PREÇO -->
+        <span class="preco">
+          R$ {{ "%.2f"|format(produto.preco) }}
+        </span>
+
+        <!-- BOTÃO -->
+        <a href="{{ url_for('novo', item=produto.nome) }}" class="btn-add">
+          Adicionar
+        </a>
+
+      </div>
+
+      {% endfor %}
+
     </div>
 
-    <a class="btn whatsapp-btn"
-       href="https://wa.me/5511987654321?text=Olá!%20Quero%20fazer%20um%20pedido."
-       target="_blank">
-      Pedir pelo WhatsApp
-    </a>
   </div>
 
-  <div class="menu-grid">
-
-    <div class="menu-item">
-      <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80" alt="Pão francês">
-      <h3>Pão Francês</h3>
-      <p>Unidade crocante e fresquinha.</p>
-      <b>R$ 0,80 cada</b>
-    </div>
-
-    <div class="menu-item">
-      <img src="https://images.unsplash.com/photo-1549931319-a545dcf3bc73?auto=format&fit=crop&w=800&q=80" alt="Pão integral">
-      <h3>Pão Integral</h3>
-      <p>Opção mais saudável para o dia a dia.</p>
-      <b>R$ 1,20 cada</b>
-    </div>
-
-    <div class="menu-item">
-      <img src="https://images.unsplash.com/photo-1608198093002-ad4e005484ec?auto=format&fit=crop&w=800&q=80" alt="Pão de leite">
-      <h3>Pão de Leite</h3>
-      <p>Macio e ideal para cafés e lanches.</p>
-      <b>R$ 1,50 cada</b>
-    </div>
-
-    <div class="menu-item">
-      <img src="https://images.unsplash.com/photo-1517433670267-08bbd4be890f?auto=format&fit=crop&w=800&q=80" alt="Bisnaga">
-      <h3>Bisnaga</h3>
-      <p>Perfeita para lanches rápidos.</p>
-      <b>R$ 2,00 cada</b>
-    </div>
-
-  </div>
-
-  <hr class="sep" />
-
-  <h3>Como funciona a entrega</h3>
-  <p class="pre">
-O cliente informa a quantidade ou variedade desejada.
-A distribuidora separa o pedido.
-Depois a entrega pode ser feita por:
-- Retirada no local
-- Motoboy
-- Uber
-
-A distribuidora não possui motoboys próprios.
-Por isso, quando houver entrega, o valor do frete é acrescentado ao pedido.
-  </p>
-
-  <div class="delivery-actions">
-    <a class="btn ghost" href="{{ url_for('novo') }}">Registrar novo pedido</a>
-    <button class="btn" type="button" onclick="simularEntrega('Uber')">Pedir entrega Uber</button>
-    <button class="btn" type="button" onclick="simularEntrega('Motoboy')">Pedir entrega Motoboy</button>
-  </div>
 </section>
-
-<script>
-  function simularEntrega(tipo) {
-    alert(
-      "Entrega selecionada: " + tipo + "\\n\\n" +
-      "A distribuidora não possui entregadores próprios.\\n" +
-      "O valor da entrega será acrescentado ao pedido."
-    );
-  }
-</script>
 
 {% endblock %}
