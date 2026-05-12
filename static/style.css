@@ -224,9 +224,13 @@ img {
   overflow: hidden;
   display: flex;
   align-items: flex-end;
+
+  margin-top: 88px;
+
   background-image:
     linear-gradient(rgba(32, 22, 15, 0.48), rgba(32, 22, 15, 0.48)),
     url("/static/img/banner-paes.png");
+
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
