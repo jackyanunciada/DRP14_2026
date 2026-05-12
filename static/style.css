@@ -824,32 +824,6 @@ img {
   }
 }
 
-/* HERO COM IMAGEM */
-.banner-principal {
-  height: 420px;
-  background:
-    linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25)),
-    url("/static/img/banner-paes.png");
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  align-items: center;
-}
-
-.banner-texto {
-  padding: 30px;
-  color: white;
-}
-
-.banner-texto h1 {
-  font-size: 2.5rem;
-  margin-bottom: 10px;
-}
-
-.banner-texto p {
-  margin-bottom: 15px;
-}
-
 /* CARDS SEM IMAGEM */
 .card {
   text-align: center;
@@ -891,18 +865,6 @@ img {
   margin-bottom: 15px;
 }
 
-.card {
-  background: linear-gradient(180deg, #ffffff 0%, #fffaf5 100%);
-}
-
-.card-icon {
-  transition: 0.3s;
-}
-
-.card:hover .card-icon {
-  transform: scale(1.1) rotate(5deg);
-}
-
 /* LOGO EM TEXTO */
 .texto-logo,
 .texto-logo-menu {
@@ -942,72 +904,6 @@ img {
   display: none;
 }
 
-/* HERO MAIS LEVE */
-.banner-principal {
-  height: 430px;
-  background:
-    linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25)),
-    url("/static/img/banner-paes.png");
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  align-items: center;
-}
-
-.banner-texto {
-  padding: 30px;
-  color: white;
-}
-
-.banner-texto h1 {
-  font-size: 2.8rem;
-  margin-bottom: 10px;
-}
-
-.banner-texto p {
-  margin-bottom: 16px;
-  font-size: 1.05rem;
-}
-
-/* PONTINHO ÚNICO */
-.slider-dots {
-  background: #b9b9b9;
-  text-align: center;
-  padding: 14px 0;
-}
-
-.dot {
-  display: inline-block;
-  width: 15px;
-  height: 15px;
-  margin: 0 4px;
-  border-radius: 50%;
-  border: 2px solid white;
-  background: transparent;
-}
-
-.dot.ativo {
-  background: white;
-}
-
-/* BOTÃO */
-.btn-banner {
-  background: linear-gradient(135deg, #d97a3b, #b85f25);
-  color: white;
-  padding: 14px 24px;
-  border-radius: 14px;
-  font-weight: bold;
-  text-decoration: none;
-  display: inline-block;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 8px 20px rgba(217, 122, 59, 0.35);
-  transition: 0.2s ease;
-}
-
-.btn-banner:hover {
-  transform: translateY(-2px) scale(1.02);
-}
 
 /* CARDS MAIS BONITOS */
 .card {
@@ -1317,145 +1213,6 @@ img {
   margin: 0;
 }
 
-.pedido-form-produtos {
-  display: block;
-}
-
-.seletor-pedido {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 20px;
-  align-items: start;
-}
-
-.titulo-bloco {
-  color: var(--marrom);
-  margin-bottom: 14px;
-  font-size: 1.2rem;
-}
-
-.grid-produtos {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-.produto-card {
-  background: linear-gradient(180deg, #fffaf5 0%, #ffffff 100%);
-  border: 1px solid #ead8be;
-  border-radius: 18px;
-  padding: 16px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
-}
-
-.produto-topo {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.produto-topo h4 {
-  color: var(--marrom);
-  font-size: 1rem;
-}
-
-.produto-topo span {
-  color: var(--laranja-escuro);
-  font-weight: bold;
-}
-
-.controle-qtd {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 14px;
-}
-
-.qtd-btn {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  border: none;
-  background: var(--laranja);
-  color: white;
-  font-size: 1.3rem;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.qtd-btn:hover {
-  background: var(--laranja-escuro);
-}
-
-.qtd-numero {
-  min-width: 24px;
-  text-align: center;
-  font-size: 1.15rem;
-  font-weight: bold;
-  color: var(--marrom);
-}
-
-.resumo-pedido {
-  background: #fff9f2;
-  border: 1px solid #ead8be;
-  border-radius: 18px;
-  padding: 18px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
-  position: sticky;
-  top: 100px;
-}
-
-.lista-resumo {
-  margin-bottom: 16px;
-}
-
-.resumo-vazio {
-  color: #777;
-  font-size: 0.95rem;
-}
-
-.resumo-item {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 8px 0;
-  border-bottom: 1px solid #f0e4d2;
-  color: #4f3a2e;
-}
-
-.resumo-linha,
-.resumo-total {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 12px;
-  color: #4f3a2e;
-}
-
-.resumo-total {
-  font-size: 1.1rem;
-  font-weight: bold;
-  color: var(--marrom);
-  padding-top: 12px;
-  border-top: 2px solid #ead8be;
-}
-
-@media (max-width: 900px) {
-  .seletor-pedido {
-    grid-template-columns: 1fr;
-  }
-
-  .grid-produtos {
-    grid-template-columns: 1fr;
-  }
-
-  .resumo-pedido {
-    position: static;
-  }
-}
-
 /* ===== AJUSTE FORMULÁRIO CADASTRO (SEM QUEBRAR NADA) ===== */
 
 .login-card {
@@ -1528,18 +1285,6 @@ img {
   font-size: 13px;
 }
 
-.pedido-card {
-  background: #fff;
-  padding: 20px;
-  border-radius: 15px;
-  margin-bottom: 15px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.pedido-card h3 {
-  margin-bottom: 10px;
-}
-
 .pedido-card p {
   margin: 5px 0;
 }
@@ -1562,52 +1307,6 @@ img {
   padding: 6px 12px;
   border-radius: 8px;
   cursor: pointer;
-}
-
-.topo-acoes {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.notificacao {
-  position: relative;
-  cursor: pointer;
-  font-size: 20px;
-}
-
-.badge {
-  position: absolute;
-  top: -6px;
-  right: -8px;
-  background: red;
-  color: white;
-  font-size: 10px;
-  padding: 2px 6px;
-  border-radius: 50%;
-}
-
-.dropdown-notificacao {
-  display: none;
-  position: absolute;
-  top: 30px;
-  right: 0;
-  background: white;
-  width: 220px;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-  padding: 10px;
-  z-index: 999;
-}
-
-.notificacao:hover .dropdown-notificacao {
-  display: block;
-}
-
-.item-notificacao {
-  font-size: 13px;
-  padding: 6px;
-  border-bottom: 1px solid #eee;
 }
 
 .menu-grid {
