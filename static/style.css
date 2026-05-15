@@ -59,12 +59,12 @@ img {
 
   z-index: 9999;
 
-  background: rgba(255, 248, 232, 0.12);
+  background: rgba(255, 248, 232, 0.18);
 
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: none;
+-webkit-backdrop-filter: none;
 
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.12);
 
   transition: 0.3s ease;
 }
@@ -229,8 +229,7 @@ img {
 }
 
 .banner-principal {
-  position: sticky;
-  top: 0;
+  position: relative;
 
   width: 100%;
   min-height: 430px;
@@ -326,9 +325,10 @@ img {
   justify-content: center;
   align-items: center;
   padding: 30px 20px;
+  
   background:
     linear-gradient(rgba(255, 247, 240, 0.82), rgba(245, 246, 250, 0.88)),
-    urlurl("/static/img/banner-home.png");
+    url("/static/img/banner-home.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -1370,7 +1370,7 @@ img {
 
 .titulo-padaria {
   position: fixed;
-  top: 22px;
+  top: 8px;
   left: 20px;
 
   z-index: 10000;
@@ -1381,11 +1381,12 @@ img {
 
   text-align: center;
 
-  padding: 10px 14px;
+  padding: 8px 12px;
 
-  background: rgba(255, 248, 232, 0.45);
+  background: rgba(255, 248, 232, 0.82);
 
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
 
   border-radius: 0 0 14px 14px;
 
@@ -1394,7 +1395,7 @@ img {
 
 .titulo-principal {
   color: #6b3b25;
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 900;
   line-height: 1;
   letter-spacing: 0.5px;
@@ -1405,16 +1406,17 @@ img {
 
   color: #c47b3b;
 
-  font-size: 0.95rem;
+  font-size: 0.82rem;
   font-weight: 700;
 
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
 }
 
-.menu-lateral .titulo-padaria {
-  display: none;
-}
-.menu-topo {
-  display: none;
+/* ESCONDE LOGO QUANDO MENU ESTIVER ABERTO */
+
+body.menu-aberto .titulo-padaria {
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.2s ease;
 }
