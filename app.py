@@ -37,52 +37,224 @@ def login_required(func):
 
 init_db()
 
+# /*CARDAPIO*/
 
-PRODUTOS_CARDAPIO =  PRODUTOS_CARDAPIO = [
+PRODUTOS_CARDAPIO = [
+
+    # 🔥 EMBALAGENS
+
     {
         "id": 1,
-        "nome": "Pão Francês",
-        "preco": 1.00,
-        "imagem": "https://images.unsplash.com/photo-1509440159596-0249088772ff",
-        "descricao": "Unidade crocante e fresquinha."
+        "categoria": "Embalagens",
+        "nome": "Embalagem SOS P",
+        "preco": 35.00,
+        "imagem": "https://images.unsplash.com/photo-1601050690597-df0568f70950",
+        "descricao": "100 unidades."
     },
     {
         "id": 2,
-        "nome": "Pão de Forma",
-        "preco": 12.00,
-        "imagem": "https://images.unsplash.com/photo-1608198093002-ad4e005484ec",
-        "descricao": "Ideal para sanduíches."
+        "categoria": "Embalagens",
+        "nome": "Embalagem SOS M",
+        "preco": 41.00,
+        "imagem": "https://images.unsplash.com/photo-1601050690597-df0568f70950",
+        "descricao": "100 unidades."
     },
     {
         "id": 3,
-        "nome": "Pão Integral",
-        "preco": 14.00,
-        "imagem": "https://images.unsplash.com/photo-1509440159596-0249088772ff",
-        "descricao": "Opção mais saudável."
+        "categoria": "Embalagens",
+        "nome": "Embalagem SOS G",
+        "preco": 49.00,
+        "imagem": "https://images.unsplash.com/photo-1601050690597-df0568f70950",
+        "descricao": "100 unidades."
     },
     {
         "id": 4,
-        "nome": "Croissant",
-        "preco": 8.00,
-        "imagem": "https://images.unsplash.com/photo-1555507036-ab1f4038808a",
-        "descricao": "Folhado amanteigado."
+        "categoria": "Embalagens",
+        "nome": "Papel Acoplado para Lanche",
+        "preco": 32.00,
+        "imagem": "https://images.unsplash.com/photo-1601050690597-df0568f70950",
+        "descricao": "400 unidades."
     },
+
+    # 🔥 PÃES
+
     {
         "id": 5,
-        "nome": "Sonho",
-        "preco": 9.00,
-        "imagem": "https://images.unsplash.com/photo-1603532648955-039310d9ed75",
-        "descricao": "Recheado e delicioso."
+        "categoria": "Pães",
+        "nome": "Pão Trad. com Gergelim",
+        "preco": 9.80,
+        "imagem": "https://images.unsplash.com/photo-1509440159596-0249088772ff",
+        "descricao": "75g • 6 unidades."
     },
     {
         "id": 6,
-        "nome": "Cuca",
-        "preco": 18.00,
+        "categoria": "Pães",
+        "nome": "Pão Green",
+        "preco": 12.00,
         "imagem": "https://images.unsplash.com/photo-1608198093002-ad4e005484ec",
-        "descricao": "Doce tradicional."
-    }
-]
+        "descricao": "75g • 6 unidades."
+    },
+    {
+        "id": 7,
+        "categoria": "Pães",
+        "nome": "Brioche",
+        "preco": 7.90,
+        "imagem": "https://images.unsplash.com/photo-1555507036-ab1f4038808a",
+        "descricao": "80g • 4 unidades."
+    },
+    {
+        "id": 8,
+        "categoria": "Pães",
+        "nome": "Pão Trad. Liso",
+        "preco": 9.80,
+        "imagem": "https://images.unsplash.com/photo-1509440159596-0249088772ff",
+        "descricao": "75g • 6 unidades."
+    },
+    {
+        "id": 9,
+        "categoria": "Pães",
+        "nome": "Pão de Hot Dog",
+        "preco": 1.80,
+        "imagem": "https://images.unsplash.com/photo-1606755962773-d324e0a13086",
+        "descricao": "80g • unidade."
+    },
+    {
+        "id": 10,
+        "categoria": "Pães",
+        "nome": "Pão Mesclado",
+        "preco": 11.00,
+        "imagem": "https://images.unsplash.com/photo-1608198093002-ad4e005484ec",
+        "descricao": "75g • 6 unidades."
+    },
+    {
+        "id": 11,
+        "categoria": "Pães",
+        "nome": "Pão Red",
+        "preco": 12.00,
+        "imagem": "https://images.unsplash.com/photo-1509440159596-0249088772ff",
+        "descricao": "75g • 6 unidades."
+    },
+    {
+        "id": 12,
+        "categoria": "Pães",
+        "nome": "Pão Australiano",
+        "preco": 11.00,
+        "imagem": "https://images.unsplash.com/photo-1549931319-a545dcf3bc73",
+        "descricao": "75g • 6 unidades."
+    },
+    {
+        "id": 13,
+        "categoria": "Pães",
+        "nome": "Pão Black",
+        "preco": 12.00,
+        "imagem": "https://images.unsplash.com/photo-1586444248902-2f64eddc13df",
+        "descricao": "75g • 6 unidades."
+    },
+    {
+        "id": 14,
+        "categoria": "Pães",
+        "nome": "Mini Brioche",
+        "preco": 35.00,
+        "imagem": "https://images.unsplash.com/photo-1555507036-ab1f4038808a",
+        "descricao": "30g • 24 unidades."
+    },
+    {
+        "id": 15,
+        "categoria": "Pães",
+        "nome": "Brioche Max",
+        "preco": 184.90,
+        "imagem": "https://images.unsplash.com/photo-1555507036-ab1f4038808a",
+        "descricao": "80g • 72 unidades."
+    },
 
+    # 🔥 SOB ENCOMENDA
+
+    {
+        "id": 16,
+        "categoria": "Sob Encomenda",
+        "nome": "Mônaco com Gergelim",
+        "preco": 25.00,
+        "imagem": "https://images.unsplash.com/photo-1509440159596-0249088772ff",
+        "descricao": "75g • 12 unidades."
+    },
+    {
+        "id": 17,
+        "categoria": "Sob Encomenda",
+        "nome": "Smart com Gergelim",
+        "preco": 25.00,
+        "imagem": "https://images.unsplash.com/photo-1509440159596-0249088772ff",
+        "descricao": "50g • 15 unidades."
+    },
+    {
+        "id": 18,
+        "categoria": "Sob Encomenda",
+        "nome": "Supremo 2 Cortes",
+        "preco": 27.00,
+        "imagem": "https://images.unsplash.com/photo-1509440159596-0249088772ff",
+        "descricao": "15 unidades."
+    },
+    {
+        "id": 19,
+        "categoria": "Sob Encomenda",
+        "nome": "Smart sem Gergelim",
+        "preco": 23.90,
+        "imagem": "https://images.unsplash.com/photo-1509440159596-0249088772ff",
+        "descricao": "15 unidades."
+    },
+    {
+        "id": 20,
+        "categoria": "Sob Encomenda",
+        "nome": "Dark 50g",
+        "preco": 32.00,
+        "imagem": "https://images.unsplash.com/photo-1586444248902-2f64eddc13df",
+        "descricao": "15 unidades."
+    },
+    {
+        "id": 21,
+        "categoria": "Sob Encomenda",
+        "nome": "Australiano 65g",
+        "preco": 29.90,
+        "imagem": "https://images.unsplash.com/photo-1549931319-a545dcf3bc73",
+        "descricao": "15 unidades."
+    },
+    {
+        "id": 22,
+        "categoria": "Sob Encomenda",
+        "nome": "Brioche CT",
+        "preco": 239.20,
+        "imagem": "https://images.unsplash.com/photo-1555507036-ab1f4038808a",
+        "descricao": "65g • 120 unidades."
+    },
+
+    # 🔥 QUEIJOS E ACOMPANHAMENTOS
+
+    {
+        "id": 23,
+        "categoria": "Queijos e Acompanhamentos",
+        "nome": "Queijo Cheddar / Mussarela / Prato",
+        "preco": 105.00,
+        "imagem": "https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d",
+        "descricao": "184 fatias."
+    },
+    
+    {
+    "id": 24,
+    "categoria": "Queijos e Acompanhamentos",
+    "nome": "Molho Cheddar",
+    "preco": 45.00,
+    "imagem": "https://images.unsplash.com/photo-1513104890138-7c749659a591",
+    "descricao": "1,5kg."
+},
+   
+   {
+    "id": 25,
+    "categoria": "Queijos e Acompanhamentos",
+    "nome": "Bacon Fatiado",
+    "preco": 33.00,
+    "imagem": "https://images.unsplash.com/photo-1528607929212-2636ec44253e",
+    "descricao": "1kg."
+}
+]   
 
 def calcular_taxa_entrega(tipo_entrega: str) -> float:
     taxas = {
@@ -578,7 +750,7 @@ if __name__ == "__main__":
     conn.execute("""
         UPDATE usuarios
         SET perfil = 'admin'
-        WHERE email = 'jaqueline.anunciada@gmail.com'
+        WHERE email = 'admin@lacasadospaes.com'
     """)
     conn.commit()
     conn.close()
