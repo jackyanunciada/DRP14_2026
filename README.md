@@ -1,4 +1,4 @@
-# 🥖 lá Casa dos Pães — Sistema de Pedidos Online
+# 🥖 Lá Casa dos Pães — Sistema de Pedidos Online
 
 ## 📌 Sobre o projeto
 
