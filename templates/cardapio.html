@@ -4,49 +4,147 @@
 
 <section class="pagina-simples">
 
-  <div class="bloco-branco">
+<div class="bloco-branco">
 
-    <h1>Cardápio</h1>
-    <p class="subtitulo">Escolha seus produtos</p>
+<h1>Cardápio</h1>
+<p class="subtitulo">Escolha seus produtos</p>
 
-    <div class="menu-grid">
 
-      {% for produto in produtos %}
+<!-- EMBALAGENS -->
 
-      <div class="menu-item">
+<h2 class="categoria-titulo">📦 Embalagens</h2>
 
-        <!-- IMAGEM -->
-        <img src="{{ produto.imagem }}" alt="{{ produto.nome }}">
+<div class="menu-grid">
 
-        <!-- NOME -->
-        <h3>{{ produto.nome }}</h3>
+{% for produto in produtos if produto.categoria=="Embalagens" %}
 
-        <!-- DESCRIÇÃO -->
-        <p>
-          {% if produto.descricao %}
-            {{ produto.descricao }}
-          {% else %}
-            Produto fresco e delicioso.
-          {% endif %}
-        </p>
+<div class="menu-item">
 
-        <!-- PREÇO -->
-        <span class="preco">
-          R$ {{ "%.2f"|format(produto.preco) }}
-        </span>
+<a href="{{ produto.imagem }}" target="_blank">
+<img src="{{ produto.imagem }}" alt="{{ produto.nome }}">
+</a>
 
-        <!-- BOTÃO -->
-        <a href="{{ url_for('novo', item=produto.nome) }}" class="btn-add">
-          Adicionar
-        </a>
+<h3>{{ produto.nome }}</h3>
 
-      </div>
+<p>{{ produto.descricao }}</p>
 
-      {% endfor %}
+<span class="preco">
+R$ {{ "%.2f"|format(produto.preco) }}
+</span>
 
-    </div>
+<a href="{{ url_for('novo', item=produto.nome) }}" class="btn-add">
+Adicionar
+</a>
 
-  </div>
+</div>
+
+{% endfor %}
+
+</div>
+
+
+
+<!-- PÃES -->
+
+<h2 class="categoria-titulo">🍞 Pães</h2>
+
+<div class="menu-grid">
+
+{% for produto in produtos if produto.categoria=="Pães" %}
+
+<div class="menu-item">
+
+<a href="{{ produto.imagem }}" target="_blank">
+<img src="{{ produto.imagem }}" alt="{{ produto.nome }}">
+</a>
+
+<h3>{{ produto.nome }}</h3>
+
+<p>{{ produto.descricao }}</p>
+
+<span class="preco">
+R$ {{ "%.2f"|format(produto.preco) }}
+</span>
+
+<a href="{{ url_for('novo', item=produto.nome) }}" class="btn-add">
+Adicionar
+</a>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+
+
+<!-- SOB ENCOMENDA -->
+
+<h2 class="categoria-titulo">⭐ Sob Encomenda</h2>
+
+<div class="menu-grid">
+
+{% for produto in produtos if produto.categoria=="Sob Encomenda" %}
+
+<div class="menu-item">
+
+<a href="{{ produto.imagem }}" target="_blank">
+<img src="{{ produto.imagem }}" alt="{{ produto.nome }}">
+</a>
+
+<h3>{{ produto.nome }}</h3>
+
+<p>{{ produto.descricao }}</p>
+
+<span class="preco">
+R$ {{ "%.2f"|format(produto.preco) }}
+</span>
+
+<a href="{{ url_for('novo', item=produto.nome) }}" class="btn-add">
+Adicionar
+</a>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+
+
+<!-- QUEIJOS -->
+
+<h2 class="categoria-titulo">🧀 Queijos e Acompanhamentos</h2>
+
+<div class="menu-grid">
+
+{% for produto in produtos if produto.categoria=="Queijos e Acompanhamentos" %}
+
+<div class="menu-item">
+
+<a href="{{ produto.imagem }}" target="_blank">
+<img src="{{ produto.imagem }}" alt="{{ produto.nome }}">
+</a>
+
+<h3>{{ produto.nome }}</h3>
+
+<p>{{ produto.descricao }}</p>
+
+<span class="preco">
+R$ {{ "%.2f"|format(produto.preco) }}
+</span>
+
+<a href="{{ url_for('novo', item=produto.nome) }}" class="btn-add">
+Adicionar
+</a>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
 
 </section>
 
