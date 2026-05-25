@@ -129,9 +129,9 @@ PRODUTOS_CARDAPIO = [
     {
         "id": 10,
         "categoria": "Pães",
-        "nome": "Pão Mesclado",
+        "nome": "Dark Ring",
         "preco": 11.00,
-        "imagem": "/static/img/pao_black.png",
+       "imagem": "/static/img/pao_dark_ring.png",
         "descricao": "75g • 6 unidades."
     },
 
@@ -203,9 +203,9 @@ PRODUTOS_CARDAPIO = [
    {
     "id": 18,
     "categoria": "Sob Encomenda",
-    "nome": "Supremo 2 Cortes",
+    "nome": "Pão com Gergelim ",
     "preco": 27.00,
-    "imagem": "/static/img/supremo_2_cortes.png",
+   "imagem": "/static/img/pao_tradicional_gergelim.png",
     "descricao": "15 unidades."
 },
 
