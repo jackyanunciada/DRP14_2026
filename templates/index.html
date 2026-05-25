@@ -5,16 +5,6 @@
 
 <main class="pagina-conteudo pagina-pedidos">
 
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for categoria, mensagem in messages %}
-        <div class="flash {{ categoria }}">
-          {{ mensagem }}
-        </div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
-
   <section class="painel-topo">
     <div>
       <h1>Meus pedidos</h1>
@@ -25,69 +15,146 @@
   </section>
 
   <section class="filtros-status">
-    <a href="{{ url_for('index') }}" class="filtro {% if not status %}ativo{% endif %}">Todos</a>
-    <a href="{{ url_for('index', status='Pendente') }}" class="filtro {% if status == 'Pendente' %}ativo{% endif %}">Pendente</a>
-    <a href="{{ url_for('index', status='Em preparo') }}" class="filtro {% if status == 'Em preparo' %}ativo{% endif %}">Em preparo</a>
-    <a href="{{ url_for('index', status='Saiu para entrega') }}" class="filtro {% if status == 'Saiu para entrega' %}ativo{% endif %}">Saiu para entrega</a>
-    <a href="{{ url_for('index', status='Entregue') }}" class="filtro {% if status == 'Entregue' %}ativo{% endif %}">Entregue</a>
-    <a href="{{ url_for('index', status='Cancelado') }}" class="filtro {% if status == 'Cancelado' %}ativo{% endif %}">Cancelado</a>
+    <a href="{{ url_for('index') }}" 
+       class="filtro {% if not status %}ativo{% endif %}">
+       Todos
+    </a>
+
+    <a href="{{ url_for('index', status='Pendente') }}" 
+       class="filtro {% if status == 'Pendente' %}ativo{% endif %}">
+       Pendente
+    </a>
+
+    <a href="{{ url_for('index', status='Em preparo') }}" 
+       class="filtro {% if status == 'Em preparo' %}ativo{% endif %}">
+       Em preparo
+    </a>
+
+    <a href="{{ url_for('index', status='Saiu para entrega') }}" 
+       class="filtro {% if status == 'Saiu para entrega' %}ativo{% endif %}">
+       Saiu para entrega
+    </a>
+
+    <a href="{{ url_for('index', status='Entregue') }}" 
+       class="filtro {% if status == 'Entregue' %}ativo{% endif %}">
+       Entregue
+    </a>
+
+    <a href="{{ url_for('index', status='Cancelado') }}" 
+       class="filtro {% if status == 'Cancelado' %}ativo{% endif %}">
+       Cancelado
+    </a>
   </section>
 
   {% if pedidos %}
     <section class="lista-pedidos">
+
       {% for pedido in pedidos %}
-        <article class="pedido-card">
-          <div class="pedido-card-topo">
-            <div>
-              <h2>Pedido #{{ pedido["id"] }}</h2>
-              <p class="pedido-card-sub">Cliente: {{ pedido["cliente"] }}</p>
-            </div>
 
-            <span class="status-badge status-{{ pedido['status']|lower|replace(' ', '-') }}">
-              {{ pedido["status"] }}
-            </span>
+      <article class="pedido-card">
+
+        <div class="pedido-card-topo">
+
+          <div>
+            <h2>Pedido #{{ pedido["id"] }}</h2>
+            <p class="pedido-card-sub">
+              Cliente: {{ pedido["cliente"] }}
+            </p>
           </div>
 
-          <div class="pedido-info">
-            <p><strong>Itens:</strong> {{ pedido["descricao"] }}</p>
-            <p><strong>Quantidade / variedade:</strong> {{ pedido["quantidade_variedade"] }}</p>
-            <p><strong>Tipo de entrega:</strong> {{ pedido["tipo_entrega"] }}</p>
+          <span class="status-badge status-{{ pedido['status']|lower|replace(' ', '-') }}">
+            {{ pedido["status"] }}
+          </span>
+
+        </div>
+
+        <div class="pedido-info">
+
+          <p>
+            <strong>Itens:</strong>
+            {{ pedido["descricao"] }}
+          </p>
+
+          <p>
+            <strong>Quantidade / variedade:</strong>
+            {{ pedido["quantidade_variedade"] }}
+          </p>
+
+          <p>
+            <strong>Tipo de entrega:</strong>
+            {{ pedido["tipo_entrega"] }}
+          </p>
+
+        </div>
+
+        <div class="pedido-resumo-financeiro">
+
+          <div class="resumo-mini">
+            <span>Taxa de entrega</span>
+            <strong>
+              R$ {{ "%.2f"|format(pedido["taxa_entrega"]) }}
+            </strong>
           </div>
 
-          <div class="pedido-resumo-financeiro">
-            <div class="resumo-mini">
-              <span>Taxa de entrega</span>
-              <strong>R$ {{ "%.2f"|format(pedido["taxa_entrega"]) }}</strong>
-            </div>
-
-            <div class="resumo-mini destaque">
-              <span>Valor total</span>
-              <strong>R$ {{ "%.2f"|format(pedido["valor_total"]) }}</strong>
-            </div>
+          <div class="resumo-mini destaque">
+            <span>Valor total</span>
+            <strong>
+              R$ {{ "%.2f"|format(pedido["valor_total"]) }}
+            </strong>
           </div>
 
-          <div class="pedido-acoes">
-            <a href="{{ url_for('ver', pedido_id=pedido['id']) }}" class="acao-link">Ver</a>
+        </div>
 
-            {% if pedido["status"] == "Pendente" %}
-              <a href="{{ url_for('editar', pedido_id=pedido['id']) }}" class="acao-link">Editar</a>
+        <div class="pedido-acoes">
 
-              <form method="post"
-                    action="{{ url_for('excluir', pedido_id=pedido['id']) }}"
-                    onsubmit="return confirm('Excluir este pedido?');">
-                <button type="submit" class="btn-excluir">Excluir</button>
-              </form>
-            {% endif %}
-          </div>
-        </article>
+          <a href="{{ url_for('ver', pedido_id=pedido['id']) }}"
+             class="acao-link">
+             Ver
+          </a>
+
+          {% if pedido["status"] == "Pendente" %}
+
+            <a href="{{ url_for('editar', pedido_id=pedido['id']) }}"
+               class="acao-link">
+               Editar
+            </a>
+
+            <form method="post"
+                  action="{{ url_for('excluir', pedido_id=pedido['id']) }}"
+                  onsubmit="return confirm('Excluir este pedido?');">
+
+              <button type="submit" class="btn-excluir">
+                Excluir
+              </button>
+
+            </form>
+
+          {% endif %}
+
+        </div>
+
+      </article>
+
       {% endfor %}
+
     </section>
+
   {% else %}
+
     <section class="vazio">
+
       <h2>Nenhum pedido encontrado</h2>
-      <p>Você ainda não tem pedidos nesse filtro.</p>
-      <a href="{{ url_for('novo') }}" class="btn-banner">Criar pedido</a>
+
+      <p>
+        Você ainda não tem pedidos nesse filtro.
+      </p>
+
+      <a href="{{ url_for('novo') }}" class="btn-banner">
+        Criar pedido
+      </a>
+
     </section>
+
   {% endif %}
 
 </main>
