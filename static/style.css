@@ -41,6 +41,7 @@ img {
 
 .pagina-conteudo {
   width: 100%;
+  padding-top: 76px;
 }
 
 .flash-area {
@@ -84,7 +85,6 @@ img {
 
 .logo-img {
   height: 58px;
-  object-fit: contain;
 }
 
 .menu-btn {
@@ -171,7 +171,6 @@ img {
 
 .menu-links {
   display: flex;
-  flex-direction: column;
 }
 
 .menu-links a {
@@ -910,12 +909,6 @@ img {
   font-size: 0.72rem;
 }
 
-/* SE AINDA EXISTIR ALGUMA IMG DE LOGO EM OUTRA TELA */
-.logo-img,
-.menu-logo-img {
-  display: none;
-}
-
 
 /* CARDS MAIS BONITOS */
 .card {
@@ -1405,11 +1398,6 @@ img {
 /* LOGO TEXTO DO TOPO */
 
 .titulo-padaria {
-  position: fixed;
-  top: 8px;
-  left: 20px;
-
-  z-index: 10000;
 
   display: flex;
   flex-direction: column;
