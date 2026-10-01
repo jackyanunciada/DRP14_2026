@@ -1,120 +1,154 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}Pão na Porta{% endblock %}</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Pão na Porta{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 </head>
+
 <body>
 
-<header class="topo-mobile">
-  <div class="topo-inner">
+    <header class="navbar bg-body-tertiary fixed-top">
+        <div class="container-fluid">
 
-    <a href="{{ url_for('home') }}" class="logo-link">
-      <img src="{{ url_for('static', filename='img/logo.png') }}" class="logo-img">
-    </a>
+            <a href="{{ url_for('home') }}" class="navbar-brand">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" class="logo-img">
+            </a>
 
-    <!-- 🔥 ADICIONADO: AÇÕES (SINO + MENU) -->
-    <div class="topo-acoes">
 
-      {% if session.get('usuario_id') %}
-      <div class="notificacao">
-        🔔
+            {% if session.get('usuario_id') %}
+            <div class="notificacao">
+                🔔
 
-        {% if nao_lidas > 0 %}
-          <span class="badge">{{ nao_lidas }}</span>
-        {% endif %}
+                {% if nao_lidas > 0 %}
+                <span class="badge">{{ nao_lidas }}</span>
+                {% endif %}
 
-        <div class="dropdown-notificacao">
-          {% for n in notificacoes %}
-            <div class="item-notificacao">
-              {{ n.mensagem }}
+                <div class="dropdown-notificacao">
+                    {% for n in notificacoes %}
+                    <div class="item-notificacao">
+                        {{ n.mensagem }}
+                    </div>
+                    {% else %}
+                    <div class="item-notificacao">Sem notificações</div>
+                    {% endfor %}
+                </div>
             </div>
-          {% else %}
-            <div class="item-notificacao">Sem notificações</div>
-          {% endfor %}
+            {% endif %}
+
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
+                aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <nav class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar"
+                aria-labelledby="offcanvasNavbarLabel">
+                <div class="offcanvas-header">
+                  <div class="titulo-padaria">
+                    <span class="titulo-principal">Lá Casa dos Pães</span>
+                    <span class="titulo-sub">Padaria Online</span>
+
+                    {% if session.get('usuario_nome') %}
+                    <div class="titulo-sub">
+                        Olá, {{ session.get('usuario_nome') }}
+                    </div>
+                    {% endif %}
+                  </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+
+      <div class="offcanvas-body">
+                <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                    <li class="nav-item">
+                        <a href="{{ url_for('home') }}" class="nav-link active">Home</a>
+                    </li>
+
+                    {% if session.get('usuario_id') %}
+                    <li class="nav-item">
+                        <a href="{{ url_for('index') }}" class="nav-link">Meus pedidos</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{{ url_for('novo') }}" class="nav-link">Novo pedido</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{{ url_for('perfil') }}" class="nav-link">Meu perfil</a>
+                    </li>
+
+
+                    {% if session.get('perfil') == 'admin' %}
+                    <li class="nav-item">
+                        <a href="{{ url_for('admin') }}" class="nav-link">Admin</a>
+                    </li>
+                    {% endif %}
+                    {% endif %}
+
+                    <li class="nav-item">
+                        <a href="{{ url_for('cardapio') }}" class="nav-link">Cardápio</a>
+                    </li>
+
+                    <!-- 🔥 ADICIONADO (FAQ) -->
+                    <li class="nav-item">
+                        <a href="{{ url_for('faq') }}" class="nav-link">FAQ</a>
+                    </li>
+
+                    {% if session.get('usuario_id') %}
+                    <li class="nav-item">
+                        <a href="{{ url_for('logout') }}" class="nav-link">Sair</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a href="{{ url_for('login') }}" class="nav-link">Entrar</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('cadastro') }}" class="nav-link">Cadastrar</a>
+                    </li>
+                    {% endif %}
+
+                </ul>
+      </div>
+            </nav>
+
         </div>
-      </div>
-      {% endif %}
+    </header>
 
-      <button class="menu-btn" onclick="abrirMenu()">☰</button>
+    <main class="pagina-conteudo">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-area">
+            {% for category, message in messages %}
+            <div class="flash {{ category }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
 
-    </div>
+        {% block content %}{% endblock %}
+    </main>
 
-  </div>
-</header>
+    <script>
+        function abrirMenu() {
+            document.getElementById("menuLateral").classList.add("ativo");
+            document.getElementById("overlay").classList.add("ativo");
+        }
 
-<div id="overlay" class="overlay" onclick="fecharMenu()"></div>
+        function fecharMenu() {
+            document.getElementById("menuLateral").classList.remove("ativo");
+            document.getElementById("overlay").classList.remove("ativo");
+        }
+    </script>
 
-<aside id="menuLateral" class="menu-lateral">
-  <div class="menu-topo">
-    <a href="{{ url_for('home') }}">
-      <img src="{{ url_for('static', filename='img/logo.png') }}" class="menu-logo-img">
-    </a>
-    <button class="fechar-btn" onclick="fecharMenu()">×</button>
-  </div>
-
-  {% if session.get('usuario_nome') %}
-    <div class="menu-usuario">
-      Olá, {{ session.get('usuario_nome') }}
-    </div>
-  {% endif %}
-
-  <nav class="menu-links">
-    <a href="{{ url_for('home') }}">Home</a>
-
-    {% if session.get('usuario_id') %}
-      <a href="{{ url_for('index') }}">Meus pedidos</a>
-      <a href="{{ url_for('novo') }}">Novo pedido</a>
-      <a href="{{ url_for('perfil') }}">Meu perfil</a>
-
-      {% if session.get('perfil') == 'admin' %}
-        <a href="{{ url_for('admin') }}">Admin</a>
-      {% endif %}
-    {% endif %}
-
-    <a href="{{ url_for('cardapio') }}">Cardápio</a>
-
-    <!-- 🔥 ADICIONADO (FAQ) -->
-    <a href="{{ url_for('faq') }}">FAQ</a>
-
-    {% if session.get('usuario_id') %}
-      <a href="{{ url_for('logout') }}">Sair</a>
-    {% else %}
-      <a href="{{ url_for('login') }}">Entrar</a>
-      <a href="{{ url_for('cadastro') }}">Cadastrar</a>
-    {% endif %}
-  </nav>
-</aside>
-
-<main class="pagina-conteudo">
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <div class="flash-area">
-        {% for category, message in messages %}
-          <div class="flash {{ category }}">
-            {{ message }}
-          </div>
-        {% endfor %}
-      </div>
-    {% endif %}
-  {% endwith %}
-
-  {% block content %}{% endblock %}
-</main>
-
-<script>
-function abrirMenu() {
-  document.getElementById("menuLateral").classList.add("ativo");
-  document.getElementById("overlay").classList.add("ativo");
-}
-
-function fecharMenu() {
-  document.getElementById("menuLateral").classList.remove("ativo");
-  document.getElementById("overlay").classList.remove("ativo");
-}
-</script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
 </body>
+
 </html>
