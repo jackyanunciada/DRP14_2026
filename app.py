@@ -38,7 +38,19 @@ def get_postgres_connection():
         sslmode="require"
     )
 
-
+@app.route("/teste-banco")
+def teste_banco():
+    try:
+        conn = get_postgres_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1")
+        cursor.fetchone()
+        cursor.close()
+        conn.close()
+        return "Conexão com Supabase funcionando!"
+    except Exception:
+        app.logger.exception("Erro na conexão com Supabase")
+        return "Erro ao conectar com Supabase. Consulte os logs do Render.", 500
 
 def login_required(func):
     @wraps(func)
