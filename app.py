@@ -23,20 +23,46 @@ def init_db():
             with open(SCHEMA_FILE, "r", encoding="utf-8") as f:
                 conn.executescript(f.read())
 
+class PostgresConnection:
+    """Compatibilidade com as consultas existentes durante a migração."""
+    def __init__(self):
+        self.conn = get_postgres_connection()
+
+    def execute(self, sql, params=None):
+        cursor = self.conn.cursor()
+        try:
+            cursor.execute(sql.replace("?", "%s"), params or ())
+            return cursor
+        except Exception:
+            cursor.close()
+            self.conn.rollback()
+            raise
+
+    def commit(self):
+        self.conn.commit()
+
+    def close(self):
+        self.conn.close()
+
+
 def get_connection():
+    if os.environ.get("USE_POSTGRES", "false").lower() == "true":
+        return PostgresConnection()
     conn = sqlite3.connect(DB_NAME)
     conn.row_factory = sqlite3.Row
     return conn
 
-def get_postgres_connection():
-    if not DATABASE_URL:
-        raise RuntimeError("DATABASE_URL não configurada")
 
+def get_postgres_connection():
+    database_url = os.environ.get("DATABASE_URL")
+    if not database_url:
+        raise RuntimeError("DATABASE_URL não configurada")
     return psycopg2.connect(
-        DATABASE_URL,
+        database_url,
         cursor_factory=RealDictCursor,
         sslmode="require"
     )
+
 
 @app.route("/teste-banco")
 def teste_banco():
@@ -63,7 +89,8 @@ def login_required(func):
     return wrapper
 
 
-init_db()
+if os.environ.get("USE_POSTGRES", "false").lower() != "true":
+    init_db()
 
 # /*CARDAPIO*/
 
@@ -543,6 +570,11 @@ def atualizar(pedido_id):
         session["usuario_id"]
     ))
 
+    if cursor.rowcount == 0:
+        conn.close()
+        flash("Pedido não encontrado.", "error")
+        return redirect(url_for("index"))
+
     # 🔔 NOTIFICAÇÃO AUTOMÁTICA
     mensagem = f"Seu pedido #{pedido_id} agora está: {status}"
 
@@ -677,6 +709,7 @@ def perfil():
 
         session["usuario_nome"] = nome
 
+        conn.close()
         flash("Dados atualizados com sucesso!", "success")
         return redirect(url_for("perfil"))
 
@@ -703,7 +736,7 @@ def admin_required(func):  #ROTA ADMIN
         ).fetchone()
         conn.close()
 
-        if usuario["perfil"] != "admin":
+        if not usuario or usuario["perfil"] != "admin":
             flash("Acesso restrito.", "error")
             return redirect(url_for("index"))
 
@@ -736,6 +769,11 @@ def admin_atualizar(pedido_id):
         "SELECT * FROM pedidos WHERE id = ?",
         (pedido_id,)
     ).fetchone()
+
+    if pedido is None:
+        conn.close()
+        flash("Pedido não encontrado.", "error")
+        return redirect(url_for("admin"))
 
     conn.execute("""
         UPDATE pedidos
@@ -794,15 +832,4 @@ def faq():
 
 
 if __name__ == "__main__":
-    conn = get_connection()
-    conn.execute("""
-        UPDATE usuarios
-        SET perfil = 'admin'
-        WHERE email = 'admin@lacasadospaes.com'
-    """)
-    conn.commit()
-    conn.close()
-
-    print("ADMIN ATUALIZADO")
-
-    app.run(debug=True)
+    app.run(debug=os.environ.get("FLASK_DEBUG", "false").lower() == "true")
