@@ -48,9 +48,10 @@ def teste_banco():
         cursor.close()
         conn.close()
         return "Conexão com Supabase funcionando!"
-        except Exception as erro:
-            app.logger.exception("Erro na conexão com Supabase")
-            return f"Falha de conexão: {type(erro).__name__}", 500
+
+    except Exception as erro:
+        app.logger.exception("Erro na conexão com Supabase")
+        return f"Falha de conexão: {type(erro).__name__}", 500
 
 def login_required(func):
     @wraps(func)
