@@ -1,0 +1,835 @@
+
+import os
+import sqlite3
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from functools import wraps
+from flask import Flask, render_template, request, redirect, url_for, flash, session
+from werkzeug.security import generate_password_hash, check_password_hash
+
+app = Flask(__name__)
+app.secret_key = os.environ.get("SECRET_KEY", "drp14_2026")
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_NAME = os.path.join(BASE_DIR, "drp14_2026.db")
+SCHEMA_FILE = os.path.join(BASE_DIR, "schemas.sql")
+
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+
+def init_db():
+    if not os.path.exists(DB_NAME):
+        with sqlite3.connect(DB_NAME) as conn:
+            with open(SCHEMA_FILE, "r", encoding="utf-8") as f:
+                conn.executescript(f.read())
+
+class PostgresConnection:
+    """Compatibilidade com as consultas existentes durante a migração."""
+    def __init__(self):
+        self.conn = get_postgres_connection()
+
+    def execute(self, sql, params=None):
+        cursor = self.conn.cursor()
+        try:
+            cursor.execute(sql.replace("?", "%s"), params or ())
+            return cursor
+        except Exception:
+            cursor.close()
+            self.conn.rollback()
+            raise
+
+    def commit(self):
+        self.conn.commit()
+
+    def close(self):
+        self.conn.close()
+
+
+def get_connection():
+    if os.environ.get("USE_POSTGRES", "false").lower() == "true":
+        return PostgresConnection()
+    conn = sqlite3.connect(DB_NAME)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def get_postgres_connection():
+    database_url = os.environ.get("DATABASE_URL")
+    if not database_url:
+        raise RuntimeError("DATABASE_URL não configurada")
+    return psycopg2.connect(
+        database_url,
+        cursor_factory=RealDictCursor,
+        sslmode="require"
+    )
+
+
+@app.route("/teste-banco")
+def teste_banco():
+    try:
+        conn = get_postgres_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1")
+        cursor.fetchone()
+        cursor.close()
+        conn.close()
+        return "Conexão com Supabase funcionando!"
+
+    except Exception as erro:
+        app.logger.exception("Erro na conexão com Supabase")
+        return f"Falha de conexão: {type(erro).__name__}", 500
+
+def login_required(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if "usuario_id" not in session:
+            flash("Faça login para acessar.", "error")
+            return redirect(url_for("login"))
+        return func(*args, **kwargs)
+    return wrapper
+
+
+if os.environ.get("USE_POSTGRES", "false").lower() != "true":
+    init_db()
+
+# /*CARDAPIO*/
+
+PRODUTOS_CARDAPIO = [
+
+    # 🔥 EMBALAGENS
+
+    {
+        "id": 1,
+        "categoria": "Embalagens",
+        "nome": "Embalagem SOS P",
+        "preco": 35.00,
+        "imagem": "/static/img/embalagem-sos-p.png",
+        "descricao": "100 unidades."
+    },
+
+    {
+        "id": 2,
+        "categoria": "Embalagens",
+        "nome": "Embalagem SOS M",
+        "preco": 41.00,
+        "imagem": "/static/img/embalagem-sos-m.png",
+        "descricao": "100 unidades."
+    },
+
+    {
+        "id": 3,
+        "categoria": "Embalagens",
+        "nome": "Embalagem SOS G",
+        "preco": 49.00,
+        "imagem": "/static/img/embalagem-sos-g.png",
+        "descricao": "100 unidades."
+    },
+
+    {
+        "id": 4,
+        "categoria": "Embalagens",
+        "nome": "Papel Acoplado para Lanche",
+        "preco": 32.00,
+        "imagem": "/static/img/papel-acoplado-lanche.png",
+        "descricao": "400 unidades."
+    },
+
+    # 🔥 PÃES
+
+    {
+        "id": 5,
+        "categoria": "Pães",
+        "nome": "Pão Trad. com Gergelim",
+        "preco": 9.80,
+        "imagem": "/static/img/pao_tradicional_gergelim.png",
+        "descricao": "75g • 6 unidades."
+    },
+
+    {
+        "id": 6,
+        "categoria": "Pães",
+        "nome": "Pão Green",
+        "preco": 12.00,
+        "imagem": "/static/img/pao_green.png",
+        "descricao": "75g • 6 unidades."
+    },
+
+    {
+        "id": 7,
+        "categoria": "Pães",
+        "nome": "Brioche",
+        "preco": 7.90,
+        "imagem": "/static/img/brioche_80g.png",
+        "descricao": "80g • 4 unidades."
+    },
+
+    {
+        "id": 8,
+        "categoria": "Pães",
+        "nome": "Pão Trad. Liso",
+        "preco": 9.80,
+        "imagem": "/static/img/pao_tradicional_liso.png",
+        "descricao": "75g • 6 unidades."
+    },
+
+    {
+        "id": 9,
+        "categoria": "Pães",
+        "nome": "Pão de Hot Dog",
+        "preco": 1.80,
+        "imagem": "/static/img/pao_hot_dog_80g.png",
+        "descricao": "80g • unidade."
+    },
+
+    {
+        "id": 10,
+        "categoria": "Pães",
+        "nome": "Dark Ring",
+        "preco": 11.00,
+       "imagem": "/static/img/pao_dark_ring.png",
+        "descricao": "75g • 6 unidades."
+    },
+
+    {
+        "id": 11,
+        "categoria": "Pães",
+        "nome": "Pão Red",
+        "preco": 12.00,
+       "imagem": "/static/img/pao_red.png",
+        "descricao": "75g • 6 unidades."
+    },
+
+    {
+        "id": 12,
+        "categoria": "Pães",
+        "nome": "Pão Australiano",
+        "preco": 11.00,
+        "imagem": "/static/img/pao_australiano.png",
+        "descricao": "75g • 6 unidades."
+    },
+
+    {
+        "id": 13,
+        "categoria": "Pães",
+        "nome": "Pão Black",
+        "preco": 12.00,
+        "imagem": "/static/img/pao_black.png",
+        "descricao": "75g • 6 unidades."
+    },
+
+    {
+        "id": 14,
+        "categoria": "Pães",
+        "nome": "Mini Brioche",
+        "preco": 35.00,
+        "imagem": "/static/img/mini_brioche_30g.png",
+        "descricao": "30g • 24 unidades."
+    },
+
+    {
+        "id": 15,
+        "categoria": "Pães",
+        "nome": "Brioche Max",
+        "preco": 184.90,
+        "imagem": "/static/img/brioche_max_85g.png",
+        "descricao": "85g • 72 unidades."
+    },
+
+    # 🔥 SOB ENCOMENDA
+
+    {
+        "id": 16,
+        "categoria": "Sob Encomenda",
+        "nome": "Mônaco com Gergelim",
+        "preco": 25.00,
+       "imagem": "/static/img/pao_monaco_gergelim.png",
+        "descricao": "75g • 12 unidades."
+    },
+
+    {
+        "id": 17,
+        "categoria": "Sob Encomenda",
+        "nome": "Smart com Gergelim",
+        "preco": 25.00,
+        "imagem": "/static/img/smart_gergelim.png",
+        "descricao": "50g • 15 unidades."
+    },
+
+   {
+    "id": 18,
+    "categoria": "Sob Encomenda",
+    "nome": "Pão com Gergelim ",
+    "preco": 27.00,
+   "imagem": "/static/img/pao_tradicional_gergelim.png",
+    "descricao": "15 unidades."
+},
+
+    {
+        "id": 19,
+        "categoria": "Sob Encomenda",
+        "nome": "Smart sem Gergelim",
+        "preco": 23.90,
+        "imagem": "/static/img/smart_gergelim.png",
+        "descricao": "15 unidades."
+    },
+
+    {
+        "id": 20,
+        "categoria": "Sob Encomenda",
+        "nome": "Dark 50g",
+        "preco": 32.00,
+        "imagem": "/static/img/pao_black.png",
+        "descricao": "15 unidades."
+    },
+
+    {
+        "id": 21,
+        "categoria": "Sob Encomenda",
+        "nome": "Australiano 65g",
+        "preco": 29.90,
+        "imagem": "/static/img/pao_australiano.png",
+        "descricao": "15 unidades."
+    },
+
+    {
+        "id": 22,
+        "categoria": "Sob Encomenda",
+        "nome": "Brioche CT",
+        "preco": 239.20,
+        "imagem": "/static/img/brioche_80g.png",
+        "descricao": "65g • 120 unidades."
+    },
+
+    # 🔥 QUEIJOS E ACOMPANHAMENTOS
+
+    {
+        "id": 23,
+        "categoria": "Queijos e Acompanhamentos",
+        "nome": "Queijo Cheddar / Mussarela / Prato",
+        "preco": 105.00,
+        "imagem": "/static/img/queijo_fatiado.png",
+        "descricao": "184 fatias."
+    },
+
+    {
+        "id": 24,
+        "categoria": "Queijos e Acompanhamentos",
+        "nome": "Molho Cheddar",
+        "preco": 45.00,
+        "imagem": "/static/img/molho_cheddar.png",
+        "descricao": "1,5kg."
+    },
+
+    {
+        "id": 25,
+        "categoria": "Queijos e Acompanhamentos",
+        "nome": "Bacon Fatiado",
+        "preco": 33.00,
+        "imagem": "/static/img/bacon_fatiado.png",
+        "descricao": "1kg."
+    }
+
+]   
+
+def calcular_taxa_entrega(tipo_entrega: str) -> float:
+    taxas = {
+        "Retirada": 0.0,
+        "Motoboy": 8.0,
+        "Uber Entrega": 12.0
+    }
+    return taxas.get(tipo_entrega, 0.0)
+
+
+# 🔔 FUNÇÃO DE NOTIFICAÇÕES
+def get_notificacoes(usuario_id):
+    conn = get_connection()
+
+    notificacoes = conn.execute("""
+        SELECT * FROM notificacoes
+        WHERE usuario_id = ?
+        ORDER BY criada_em DESC
+        LIMIT 5
+    """, (usuario_id,)).fetchall()
+
+    nao_lidas = conn.execute("""
+        SELECT COUNT(*) as total
+        FROM notificacoes
+        WHERE usuario_id = ? AND lida = 0
+    """, (usuario_id,)).fetchone()["total"]
+
+    conn.close()
+
+    return notificacoes, nao_lidas
+
+
+# 🔔 INJETAR NOTIFICAÇÕES NO TEMPLATE
+@app.context_processor
+def inject_notificacoes():
+    if "usuario_id" in session:
+        notificacoes, nao_lidas = get_notificacoes(session["usuario_id"])
+        return dict(notificacoes=notificacoes, nao_lidas=nao_lidas)
+    return dict(notificacoes=[], nao_lidas=0)
+
+
+@app.route("/")
+@login_required
+def index():
+    status = request.args.get("status", "")
+    conn = get_connection()
+
+    if status:
+        pedidos = conn.execute(
+            """
+            SELECT * FROM pedidos
+            WHERE usuario_id = ? AND status = ?
+            ORDER BY id DESC
+            """,
+            (session["usuario_id"], status)
+        ).fetchall()
+    else:
+        pedidos = conn.execute(
+            """
+            SELECT * FROM pedidos
+            WHERE usuario_id = ?
+            ORDER BY id DESC
+            """,
+            (session["usuario_id"],)
+        ).fetchall()
+
+    conn.close()
+    return render_template("index.html", pedidos=pedidos, status=status)
+
+
+@app.route("/cardapio")
+def cardapio():
+    return render_template("cardapio.html", produtos=PRODUTOS_CARDAPIO)
+
+
+@app.route("/home")
+def home():
+    return render_template("home.html")
+
+
+@app.route("/novo")
+@login_required
+def novo():
+    item_selecionado = request.args.get("item")
+    pedido = {
+        "id": "",
+        "cliente": session.get("usuario_nome", ""),
+        "descricao": "",
+        "quantidade_variedade": "",
+        "status": "Pendente",
+        "tipo_entrega": "Retirada",
+        "taxa_entrega": 0,
+        "valor_total": 0,
+        "prioridade": "Média"
+    }
+    return render_template(
+        "form.html",
+        modo="criar",
+        pedido=pedido,
+        produtos=PRODUTOS_CARDAPIO
+    )
+
+
+@app.route("/criar", methods=["POST"])
+@login_required
+def criar():
+    cliente = request.form.get("cliente") or session.get("usuario_nome", "")
+    descricao = request.form.get("descricao", "").strip()
+    quantidade_variedade = request.form.get("quantidade_variedade", "").strip()
+    status = request.form.get("status", "Pendente")
+    tipo_entrega = request.form.get("tipo_entrega", "Retirada")
+    prioridade = request.form.get("prioridade", "Média")
+
+    subtotal = float(request.form.get("subtotal", 0) or 0)
+    taxa_entrega = calcular_taxa_entrega(tipo_entrega)
+    valor_total = subtotal + taxa_entrega
+
+    if not descricao or not quantidade_variedade:
+        flash("Selecione pelo menos um item para criar o pedido.", "error")
+        return redirect(url_for("novo"))
+
+    conn = get_connection()
+    conn.execute("""
+        INSERT INTO pedidos
+        (usuario_id, cliente, descricao, quantidade_variedade, status, tipo_entrega, taxa_entrega, valor_total, prioridade)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        session["usuario_id"],
+        cliente,
+        descricao,
+        quantidade_variedade,
+        status,
+        tipo_entrega,
+        taxa_entrega,
+        valor_total,
+        prioridade
+    ))
+    conn.commit()
+    conn.close()
+
+    flash("Pedido criado com sucesso!", "success")
+    return redirect(url_for("index"))
+
+
+@app.route("/ver/<int:pedido_id>")
+@login_required
+def ver(pedido_id):
+    conn = get_connection()
+    pedido = conn.execute(
+        """
+        SELECT * FROM pedidos
+        WHERE id = ? AND usuario_id = ?
+        """,
+        (pedido_id, session["usuario_id"])
+    ).fetchone()
+    conn.close()
+
+    if pedido is None:
+        flash("Pedido não encontrado.", "error")
+        return redirect(url_for("index"))
+
+    return render_template("view.html", pedido=pedido)
+
+
+@app.route("/editar/<int:pedido_id>")
+@login_required
+def editar(pedido_id):
+    conn = get_connection()
+    pedido = conn.execute(
+        """
+        SELECT * FROM pedidos
+        WHERE id = ? AND usuario_id = ?
+        """,
+        (pedido_id, session["usuario_id"])
+    ).fetchone()
+    conn.close()
+
+    if pedido is None:
+        flash("Pedido não encontrado.", "error")
+        return redirect(url_for("index"))
+
+    return render_template(
+        "form.html",
+        modo="editar",
+        pedido=pedido,
+        produtos=PRODUTOS_CARDAPIO
+    )
+
+
+@app.route("/atualizar/<int:pedido_id>", methods=["POST"])
+@login_required
+def atualizar(pedido_id):
+    cliente = request.form.get("cliente") or session.get("usuario_nome", "")
+    descricao = request.form.get("descricao", "").strip()
+    quantidade_variedade = request.form.get("quantidade_variedade", "").strip()
+    status = request.form.get("status", "Pendente")
+    tipo_entrega = request.form.get("tipo_entrega", "Retirada")
+    prioridade = request.form.get("prioridade", "Média")
+
+    subtotal = float(request.form.get("subtotal", 0) or 0)
+    taxa_form = request.form.get("taxa_entrega", "")
+    valor_form = request.form.get("valor_total", "")
+
+    if taxa_form and valor_form:
+        taxa_entrega = float(taxa_form)
+        valor_total = float(valor_form)
+    else:
+        taxa_entrega = calcular_taxa_entrega(tipo_entrega)
+        valor_total = subtotal + taxa_entrega
+
+    if not descricao or not quantidade_variedade:
+        flash("Preencha os dados do pedido.", "error")
+        return redirect(url_for("editar", pedido_id=pedido_id))
+
+    conn = get_connection()
+
+    cursor = conn.execute("""
+        UPDATE pedidos
+        SET cliente = ?,
+            descricao = ?,
+            quantidade_variedade = ?,
+            status = ?,
+            tipo_entrega = ?,
+            taxa_entrega = ?,
+            valor_total = ?,
+            prioridade = ?
+        WHERE id = ? AND usuario_id = ?
+    """, (
+        cliente,
+        descricao,
+        quantidade_variedade,
+        status,
+        tipo_entrega,
+        taxa_entrega,
+        valor_total,
+        prioridade,
+        pedido_id,
+        session["usuario_id"]
+    ))
+
+    if cursor.rowcount == 0:
+        conn.close()
+        flash("Pedido não encontrado.", "error")
+        return redirect(url_for("index"))
+
+    # 🔔 NOTIFICAÇÃO AUTOMÁTICA
+    mensagem = f"Seu pedido #{pedido_id} agora está: {status}"
+
+    conn.execute("""
+        INSERT INTO notificacoes (usuario_id, mensagem)
+        VALUES (?, ?)
+    """, (session["usuario_id"], mensagem))
+
+    # ✅ UM ÚNICO COMMIT
+    conn.commit()
+    conn.close()
+
+    if cursor.rowcount == 0:
+        flash("Pedido não encontrado.", "error")
+        return redirect(url_for("index"))
+
+    flash("Pedido atualizado com sucesso!", "success")
+    return redirect(url_for("index"))
+
+
+@app.route("/excluir/<int:pedido_id>", methods=["POST"])
+@login_required
+def excluir(pedido_id):
+    conn = get_connection()
+    cursor = conn.execute(
+        """
+        DELETE FROM pedidos
+        WHERE id = ? AND usuario_id = ?
+        """,
+        (pedido_id, session["usuario_id"])
+    )
+    conn.commit()
+    conn.close()
+
+    if cursor.rowcount == 0:
+        flash("Pedido não encontrado.", "error")
+        return redirect(url_for("index"))
+
+    flash("Pedido excluído com sucesso!", "success")
+    return redirect(url_for("index"))
+
+
+# 🔥 CADASTRO ATUALIZADO
+@app.route("/cadastro", methods=["GET", "POST"])
+def cadastro():
+    if request.method == "POST":
+        nome = request.form["nome"].strip()
+        email = request.form["email"].strip().lower()
+        senha = request.form["senha"]
+        cpf = request.form["cpf"].strip()
+        data_nascimento = request.form["data_nascimento"]
+        endereco = request.form["endereco"].strip()
+
+        conn = get_connection()
+        usuario_existente = conn.execute(
+            "SELECT * FROM usuarios WHERE email = ?",
+            (email,)
+        ).fetchone()
+
+        if usuario_existente:
+            conn.close()
+            flash("Este e-mail já está cadastrado.", "error")
+            return redirect(url_for("cadastro"))
+
+        senha_hash = generate_password_hash(senha)
+
+        conn.execute("""
+            INSERT INTO usuarios (nome, email, senha, cpf, data_nascimento, endereco)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (nome, email, senha_hash, cpf, data_nascimento, endereco))
+
+        conn.commit()
+        conn.close()
+
+        flash("Cadastro realizado com sucesso!", "success")
+        return redirect(url_for("login"))
+
+    return render_template("register.html")
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        email = request.form["email"].strip().lower()
+        senha = request.form["senha"]
+
+        conn = get_connection()
+        usuario = conn.execute(
+            "SELECT * FROM usuarios WHERE email = ?",
+            (email,)
+        ).fetchone()
+        conn.close()
+
+        if usuario and check_password_hash(usuario["senha"], senha):
+            session["usuario_id"] = usuario["id"]
+            session["usuario_nome"] = usuario["nome"]
+            session["perfil"] = usuario["perfil"]  # 🔥 
+
+            flash("Login realizado com sucesso!", "success")
+            return redirect(url_for("index"))
+
+        flash("E-mail ou senha inválidos.", "error")
+
+    return render_template("login.html")
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash("Você saiu da conta.", "success")
+    return redirect(url_for("login"))
+
+
+@app.route("/perfil", methods=["GET", "POST"])
+@login_required
+def perfil():
+    conn = get_connection()
+
+    if request.method == "POST":
+        nome = request.form["nome"].strip()
+        cpf = request.form["cpf"].strip()
+        data_nascimento = request.form["data_nascimento"]
+        endereco = request.form["endereco"].strip()
+
+        conn.execute("""
+            UPDATE usuarios
+            SET nome = ?, cpf = ?, data_nascimento = ?, endereco = ?
+            WHERE id = ?
+        """, (nome, cpf, data_nascimento, endereco, session["usuario_id"]))
+
+        conn.commit()
+
+        session["usuario_nome"] = nome
+
+        conn.close()
+        flash("Dados atualizados com sucesso!", "success")
+        return redirect(url_for("perfil"))
+
+    usuario = conn.execute(
+        "SELECT * FROM usuarios WHERE id = ?",
+        (session["usuario_id"],)
+    ).fetchone()
+
+    conn.close()
+
+    return render_template("perfil.html", usuario=usuario)
+
+
+def admin_required(func):  #ROTA ADMIN
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if "usuario_id" not in session:
+            return redirect(url_for("login"))
+
+        conn = get_connection()
+        usuario = conn.execute(
+            "SELECT * FROM usuarios WHERE id = ?",
+            (session["usuario_id"],)
+        ).fetchone()
+        conn.close()
+
+        if not usuario or usuario["perfil"] != "admin":
+            flash("Acesso restrito.", "error")
+            return redirect(url_for("index"))
+
+        return func(*args, **kwargs)
+    return wrapper
+
+@app.route("/admin") #ROTA ADMIN
+@admin_required
+def admin():
+    conn = get_connection()
+    pedidos = conn.execute("""
+        SELECT pedidos.*, usuarios.nome
+        FROM pedidos
+        JOIN usuarios ON pedidos.usuario_id = usuarios.id
+        ORDER BY pedidos.id DESC
+    """).fetchall()
+    conn.close()
+
+    return render_template("admin.html", pedidos=pedidos)
+
+# ATUALIZAR STATUS (ADMIN)
+@app.route("/admin/atualizar/<int:pedido_id>", methods=["POST"]) 
+@admin_required
+def admin_atualizar(pedido_id):
+    status = request.form.get("status")
+
+    conn = get_connection()
+
+    pedido = conn.execute(
+        "SELECT * FROM pedidos WHERE id = ?",
+        (pedido_id,)
+    ).fetchone()
+
+    if pedido is None:
+        conn.close()
+        flash("Pedido não encontrado.", "error")
+        return redirect(url_for("admin"))
+
+    conn.execute("""
+        UPDATE pedidos
+        SET status = ?
+        WHERE id = ?
+    """, (status, pedido_id))
+
+    # 🔔 NOTIFICAÇÃO PARA O CLIENTE
+    mensagem = f"Seu pedido #{pedido_id} foi atualizado para: {status}"
+
+    conn.execute("""
+        INSERT INTO notificacoes (usuario_id, mensagem)
+        VALUES (?, ?)
+    """, (pedido["usuario_id"], mensagem))
+
+    conn.commit()
+    conn.close()
+
+    flash("Status atualizado!", "success")
+    return redirect(url_for("admin"))
+
+@app.route("/admin/pedidos")
+@login_required
+def admin_pedidos():
+    if session.get("perfil") != "admin":
+        flash("Acesso negado", "error")
+        return redirect(url_for("home"))
+
+    conn = get_connection()
+    pedidos = conn.execute("SELECT * FROM pedidos ORDER BY criado_em DESC").fetchall()
+    conn.close()
+
+    return render_template("admin_pedidos.html", pedidos=pedidos)
+
+@app.route("/admin/pedido/<int:pedido_id>/status", methods=["POST"])
+@login_required
+def admin_atualizar_status(pedido_id):
+    if session.get("perfil") != "admin":
+        flash("Acesso negado", "error")
+        return redirect(url_for("home"))
+
+    novo_status = request.form.get("status")
+
+    conn = get_connection()
+    conn.execute("UPDATE pedidos SET status=? WHERE id=?", (novo_status, pedido_id))
+    conn.commit()
+    conn.close()
+
+    flash("Status atualizado!", "success")
+    return redirect(url_for("admin_pedidos"))
+
+@app.route("/faq")
+def faq():
+    return render_template("faq.html")
+
+
+
+if __name__ == "__main__":
+    app.run(debug=os.environ.get("FLASK_DEBUG", "false").lower() == "true")
