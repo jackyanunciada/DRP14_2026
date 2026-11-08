@@ -1,15 +1,20 @@
+
 import os
 import sqlite3
+import psycopg2
+from psycopg2.extras import RealDictCursor
 from functools import wraps
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.secret_key = "drp14_2026"
+app.secret_key = os.environ.get("SECRET_KEY", "drp14_2026")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_NAME = os.path.join(BASE_DIR, "drp14_2026.db")
 SCHEMA_FILE = os.path.join(BASE_DIR, "schemas.sql")
+
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
 
 def init_db():
@@ -18,11 +23,21 @@ def init_db():
             with open(SCHEMA_FILE, "r", encoding="utf-8") as f:
                 conn.executescript(f.read())
 
-
 def get_connection():
     conn = sqlite3.connect(DB_NAME)
     conn.row_factory = sqlite3.Row
     return conn
+
+def get_postgres_connection():
+    if not DATABASE_URL:
+        raise RuntimeError("DATABASE_URL não configurada")
+
+    return psycopg2.connect(
+        DATABASE_URL,
+        cursor_factory=RealDictCursor,
+        sslmode="require"
+    )
+
 
 
 def login_required(func):
